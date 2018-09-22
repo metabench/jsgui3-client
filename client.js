@@ -12,33 +12,19 @@ jsgui.Client_Resource = require('./resource');
 const fnl = require('fnl');
 const prom_or_cb = fnl.prom_or_cb;
 
+// Leave the line below
 /* -- REQUIREMENTS -- */
-
-
-
+// Leave the line above
 
 if (typeof window !== 'undefined') {
-
-    const textToArrayBuffer = (textBuffer, startOffset = 0) => {
-        var len = textBuffer.length - startOffset;
-        var arrayBuffer = new ArrayBuffer(len);
-        var ui8a = new Uint8Array(arrayBuffer, 0);
-        for (var i = 0, j = startOffset; i < len; i++, j++)
-            ui8a[i] = (textBuffer.charCodeAt(j) & 0xff);
-
-        let buf = new Buffer(arrayBuffer);
-        return buf;
-    }
 
 
     jsgui.http = (url, callback) => {
         return prom_or_cb((resolve, reject) => {
             var oReq = new XMLHttpRequest();
-
             oReq.onreadystatechange = function() {
                 if (this.readyState == 4) {
                     console.log('this.status', this.status);
-
                     if (this.status == 200) {
                         var o = JSON.parse(this.responseText);
                         //myFunction(myArr);
@@ -48,38 +34,15 @@ if (typeof window !== 'undefined') {
                     }
                 }
             };
-
             oReq.open("get", url, true);
             oReq.send();
         }, callback);
     }
 
     let activate = () => {
-
         page_context = new jsgui.Client_Page_Context({
             'document': document
         });
-
-
-
-        // 
-
-
-        // maybe need a different register function.
-
-        /*
-
-        jsgui.register_ctrl = (type_name, ctrl_name, Ctrl) => {
-            console.log('register_ctrl type_name, ctrl_name', type_name, ctrl_name);
-            jsgui[ctrl_name] = Ctrl;
-            page_context.update_Controls(type_name, Ctrl);
-
-        }
-        */
-
-
-
-
         // Set up a variety of UI controls here.
 
         // May be worth looking at some registry of controls.
@@ -141,9 +104,7 @@ if (typeof window !== 'undefined') {
                 // .on(active)
                 
                 // client activate hooks.
-
                 // Injection of further code here...
-
                 // Could load code that has its own dependencies.
                 //  That would make sense if loading other bits and pieces.
 
