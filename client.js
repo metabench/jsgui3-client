@@ -65,6 +65,12 @@ if (typeof window !== 'undefined') {
                 page_context.update_Controls('text_field', jsgui.Text_Field);
                 page_context.update_Controls('text_item', jsgui.Text_Item);
 
+                page_context.update_Controls('tree', jsgui.Tree);
+                page_context.update_Controls('tree_node', jsgui.Tree_Node);
+                page_context.update_Controls('panel', jsgui.Panel);
+                page_context.update_Controls('title_bar', jsgui.Title_Bar);
+                page_context.update_Controls('vertical_expander', jsgui.Vertical_Expander);
+
 
                 page_context.update_Controls('resize_handle', jsgui.Resize_Handle);
                 page_context.update_Controls('toggle_button', jsgui.Toggle_Button);
@@ -85,7 +91,6 @@ if (typeof window !== 'undefined') {
                 page_context.update_Controls('tile_slider', jsgui.Tile_Slider);
                 page_context.update_Controls('left_right_arrows_selector', jsgui.Left_Right_Arrows_Selector);
                 page_context.update_Controls('span', jsgui.span);
-
 
                 page_context.update_Controls('Tabbed_Panel', jsgui.Tabbed_Panel);
                 //page_context.update_Controls('span', jsgui.span);
