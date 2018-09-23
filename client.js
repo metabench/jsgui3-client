@@ -1,5 +1,4 @@
 var jsgui = require('jsgui3-html');
-
 jsgui.Resource_Pool = require('./client-resource-pool');
 jsgui.Client_Page_Context = require('./page-context');
 //console.log('jsgui.Client_Page_Context', jsgui.Client_Page_Context);
@@ -17,8 +16,6 @@ const prom_or_cb = fnl.prom_or_cb;
 // Leave the line above
 
 if (typeof window !== 'undefined') {
-
-
     jsgui.http = (url, callback) => {
         return prom_or_cb((resolve, reject) => {
             var oReq = new XMLHttpRequest();
@@ -71,7 +68,6 @@ if (typeof window !== 'undefined') {
                 page_context.update_Controls('title_bar', jsgui.Title_Bar);
                 page_context.update_Controls('vertical_expander', jsgui.Vertical_Expander);
 
-
                 page_context.update_Controls('resize_handle', jsgui.Resize_Handle);
                 page_context.update_Controls('toggle_button', jsgui.Toggle_Button);
                 page_context.update_Controls('start_stop_toggle_button', jsgui.Start_Stop_Toggle_Button);
@@ -98,30 +94,9 @@ if (typeof window !== 'undefined') {
                 jsgui.activate(page_context);
                 console.log('post jsgui activate');
 
-                // There could be a second activation stage.
-                //  post-activate
-                //  on activated
-
-                // activate page, after activating controls.
-                //  sometimes the control will be the page.
-                //  however, we need to activate the page in some situations.
-
-                // .on(active)
-                
-                // client activate hooks.
-                // Injection of further code here...
-                // Could load code that has its own dependencies.
-                //  That would make sense if loading other bits and pieces.
-
-                // Could also import / load further requirements above.
-
-                //  Editing this client.js file seems like the best way to go.
-                //  Could replace one commented area with a list of statements.
-
-                // So it would be able to require various files, then make use of them during activation.
-
                 let context = page_context;
 
+                // LEAVE THIS
                 /* -- ACTIVATE-APP -- */
             }
             early_load_and_activate();
