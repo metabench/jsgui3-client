@@ -21,7 +21,7 @@ if (typeof window !== 'undefined') {
             var oReq = new XMLHttpRequest();
             oReq.onreadystatechange = function() {
                 if (this.readyState == 4) {
-                    console.log('this.status', this.status);
+                    //console.log('this.status', this.status);
                     if (this.status == 200) {
                         var o = JSON.parse(this.responseText);
                         //myFunction(myArr);
@@ -35,6 +35,7 @@ if (typeof window !== 'undefined') {
             oReq.send();
         }, callback);
     }
+    /*
 
     let activate = () => {
         page_context = new jsgui.Client_Page_Context({
@@ -43,6 +44,7 @@ if (typeof window !== 'undefined') {
         // Set up a variety of UI controls here.
 
         // May be worth looking at some registry of controls.
+
 
 
         window.onload = function () {
@@ -96,13 +98,20 @@ if (typeof window !== 'undefined') {
 
                 let context = page_context;
 
+
+                */
+
                 // LEAVE THIS
                 /* -- ACTIVATE-APP -- */
+
+
+                /*
             }
             early_load_and_activate();
         }
     }
-    activate();
+    //activate();
+    */
 }
 
 module.exports = jsgui;
