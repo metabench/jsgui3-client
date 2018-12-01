@@ -1,6 +1,9 @@
 var jsgui = require('jsgui3-html');
 var Client_Resource = require('./resource');
 
+const fnl = require('fnl');
+const {prom_or_cb} = fnl;
+
 var stringify = jsgui.stringify,
     each = jsgui.each,
     arrayify = jsgui.arrayify,
@@ -14,30 +17,27 @@ var fp = jsgui.fp,
 var Collection = jsgui.Collection;
 
 class Data_Resource extends Client_Resource {
-
     constructor(spec) {
         super(spec);
         this.data = {};
     }
-
     get(key, callback) {
         // Some get operations could return observables.
-
         // generally will just be done with an HTTP request.
 
-        jsgui.http('/data/' + key, (err, res_http) => {
-            if (err) {
-                callback(err);
-            } else {
-                callback(null, res_http);
-
-
-                //console.log('res_http', res_http);
-            }
-        })
-
+        return prom_or_cb((solve, jettison) => {
+            jsgui.http('/resources/' + key, (err, res_http) => {
+                if (err) {
+                    //callback(err);
+                    jettison(err);
+                } else {
+                    //callback(null, res_http);
+                    solve(res_http);
+                    //console.log('res_http', res_http);
+                }
+            });
+        }, callback);
     }
-
 }
 
 module.exports = (Data_Resource);
