@@ -31,8 +31,40 @@ if (typeof window !== 'undefined') {
                     }
                 }
             };
-            oReq.open("get", url, true);
+            oReq.open("GET", url, true);
             oReq.send();
+        }, callback);
+    },
+    jsgui.http_post = (url, value, callback) => {
+        return prom_or_cb((resolve, reject) => {
+            var oReq = new XMLHttpRequest();
+            oReq.onreadystatechange = function() {
+                if (this.readyState == 4) {
+                    //console.log('this.status', this.status);
+                    if (this.status == 200) {
+                        var o = JSON.parse(this.responseText);
+                        //myFunction(myArr);
+                        resolve(o);
+                    } else {
+                        console.log('this.status', this.status);
+                        reject({
+                            status: this.status,
+                            responseText: this.responseText
+                        });
+                    }
+                }
+            };
+            
+
+            let s_value;
+            if (typeof value !== 'string') {
+                s_value = JSON.stringify(value);
+            } else {
+                s_value = value;
+            }
+            oReq.open("POST", url, true);
+            
+            oReq.send(s_value);
         }, callback);
     }
     /*

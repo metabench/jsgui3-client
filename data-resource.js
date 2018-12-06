@@ -24,10 +24,29 @@ class Data_Resource extends Client_Resource {
     get(key, callback) {
         // Some get operations could return observables.
         // generally will just be done with an HTTP request.
-
         return prom_or_cb((solve, jettison) => {
             jsgui.http('/resources/' + key, (err, res_http) => {
                 if (err) {
+                    //callback(err);
+                    jettison(err);
+                } else {
+                    //callback(null, res_http);
+                    solve(res_http);
+                    //console.log('res_http', res_http);
+                }
+            });
+        }, callback);
+    }
+
+    post(key, value, callback) {
+        // Some get operations could return observables.
+        // generally will just be done with an HTTP request.
+        return prom_or_cb((solve, jettison) => {
+            jsgui.http_post('/resources/' + key, value, (err, res_http) => {
+                if (err) {
+                    console.log('err', err);
+
+
                     //callback(err);
                     jettison(err);
                 } else {
