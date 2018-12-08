@@ -7,7 +7,6 @@ jsgui.Client_Page_Context = require('./page-context');
 //
 
 jsgui.Client_Resource = require('./resource');
-
 const fnl = require('fnl');
 const prom_or_cb = fnl.prom_or_cb;
 
@@ -54,8 +53,6 @@ if (typeof window !== 'undefined') {
                     }
                 }
             };
-            
-
             let s_value;
             if (typeof value !== 'string') {
                 s_value = JSON.stringify(value);
@@ -63,7 +60,6 @@ if (typeof window !== 'undefined') {
                 s_value = value;
             }
             oReq.open("POST", url, true);
-            
             oReq.send(s_value);
         }, callback);
     }
@@ -76,8 +72,6 @@ if (typeof window !== 'undefined') {
         // Set up a variety of UI controls here.
 
         // May be worth looking at some registry of controls.
-
-
 
         window.onload = function () {
             //console.log('pre activate');
@@ -130,12 +124,10 @@ if (typeof window !== 'undefined') {
 
                 let context = page_context;
 
-
                 */
 
                 // LEAVE THIS
                 /* -- ACTIVATE-APP -- */
-
 
                 /*
             }

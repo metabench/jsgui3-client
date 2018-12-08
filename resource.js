@@ -172,7 +172,7 @@ class Client_Resource extends Resource {
 			}
 
 
-			console.log('this (Resource)', this);
+			//console.log('this (Resource)', this);
 
 			json_url = 'resources/' + this.name + '/' + json_url;
 
@@ -180,7 +180,7 @@ class Client_Resource extends Resource {
 
 			//json_url = ''
 
-			console.log('json_url', json_url);
+			//console.log('json_url', json_url);
 
 
 			jsgui.http(json_url, function (err, res) {
