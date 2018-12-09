@@ -45,8 +45,6 @@ class Data_Resource extends Client_Resource {
             jsgui.http_post('/resources/' + key, value, (err, res_http) => {
                 if (err) {
                     console.log('err', err);
-
-
                     //callback(err);
                     jettison(err);
                 } else {
