@@ -15,6 +15,10 @@ const prom_or_cb = fnl.prom_or_cb;
 // Leave the line above
 
 if (typeof window !== 'undefined') {
+
+
+    // need to use https really
+
     jsgui.http = (url, callback) => {
         return prom_or_cb((resolve, reject) => {
             var oReq = new XMLHttpRequest();
