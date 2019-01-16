@@ -49,7 +49,7 @@ if (typeof window !== 'undefined') {
                         //myFunction(myArr);
                         resolve(o);
                     } else {
-                        console.log('this.status', this.status);
+                        //console.log('this.status', this.status);
                         reject({
                             status: this.status,
                             responseText: this.responseText
