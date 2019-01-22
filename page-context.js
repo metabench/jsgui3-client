@@ -16,7 +16,6 @@ var Client_Resource_Pool = require('./client-resource-pool');
 //var Selection_Scope = require('./selection-scope');
 //console.log('jsgui.Page_Context', jsgui.Page_Context);
 
-
 class Client_Page_Context extends jsgui.Page_Context {
     constructor(spec) {
         spec = spec || {};
@@ -24,9 +23,7 @@ class Client_Page_Context extends jsgui.Page_Context {
         //this.set('document', spec.document);
         this.document = spec.document || document;
         this.resource_pool = new Client_Resource_Pool({});
-
         // get the data_resource out of the resource_pool
-
         // Looks like I need to fix Collection, its indexing, and use within Resource.
         //console.log('this.resource_pool.resource_names', this.resource_pool.resource_names);
         //console.log('this.resource_pool', this.resource_pool);
@@ -35,11 +32,7 @@ class Client_Page_Context extends jsgui.Page_Context {
         this.data_resource = this.resource_pool.resources._arr[0];
         this.map_els = {};
         // The item IDs could be handled here... use the local variable closure here.
-        
-
         // Client data resource for general purpose data?
-
-
     }
     'get_ctrl_el'(ctrl) {
         return this.map_els[ctrl._id()];
@@ -52,21 +45,19 @@ class Client_Page_Context extends jsgui.Page_Context {
         }
         //console.log('context registered ' + jsgui_id);
     }
+
+    // change to get body function.
+
     
     'body'() {
         var doc = this.document;
         //console.log('doc', doc);
-
         //var bod = doc.childNodes[0].childNodes[1];
-
         // Gets the body control.
-
         var bod = doc.body;
         //var bod = doc.body;
         //console.log('bod', bod);
-
         // Then need to see if a control exists.
-
         if (!this._body) {
 
             // Can we connect it through jsgui ids.
@@ -75,8 +66,6 @@ class Client_Page_Context extends jsgui.Page_Context {
 
             if (!existing_jsgui_id) {
                 // Those don't use the enhancements...
-
-
 
                 var ctrl_body = new jsgui.body({
                     'el': document.body,
@@ -94,38 +83,8 @@ class Client_Page_Context extends jsgui.Page_Context {
             }
             //console.log('ctrl_body._id()', ctrl_body._id());
         } else {
-
         }
-
         return this._body;
-
-
-
-        // and if we don't have a body control, we need to make one.
-
-
-        /*
-        if (!bod) {
-            // Need to create a new body control.
-
-            // Possibly body control should have been made upon jsgui activation.
-
-            
-
-
-            // May need to activate it?
-
-
-        } else {
-            var bod_id = bod.getAttribute('data-jsgui-id');
-            var res = this.map_controls[bod_id];
-            //console.log('res', res);
-            return res;
-        }
-        */
-
-        //console.log('bod_id', bod_id);
-
     }
 }
 // Also want a File_Server.
