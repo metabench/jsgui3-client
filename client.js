@@ -68,6 +68,26 @@ if (typeof window !== 'undefined') {
             }, callback);
         }
 
+        jsgui.http_delete = (url, callback) => {
+            return prom_or_cb((resolve, reject) => {
+                var oReq = new XMLHttpRequest();
+                oReq.onreadystatechange = function () {
+                    if (this.readyState == 4) {
+                        //console.log('this.status', this.status);
+                        if (this.status == 200) {
+                            var o = JSON.parse(this.responseText);
+                            //myFunction(myArr);
+                            resolve(o);
+                        } else {
+                            reject(this.status);
+                        }
+                    }
+                };
+                oReq.open("DELETE", url, true);
+                oReq.send();
+            }, callback);
+        }
+
     jsgui.update_standard_Controls = page_context => {
         page_context.update_Controls('text_field', jsgui.Text_Field);
         page_context.update_Controls('text_item', jsgui.Text_Item);

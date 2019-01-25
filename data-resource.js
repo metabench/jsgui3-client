@@ -47,6 +47,19 @@ class Data_Resource extends Client_Resource {
             });
         }, callback);
     }
+
+    delete(key, callback) {
+        return prom_or_cb((solve, jettison) => {
+            jsgui.http_delete('/resources/' + key, (err, res_http) => {
+                if (err) {
+                    console.log('err', err);
+                    jettison(err);
+                } else {
+                    solve(res_http);
+                }
+            });
+        }, callback);
+    }
 }
 
 module.exports = (Data_Resource);
