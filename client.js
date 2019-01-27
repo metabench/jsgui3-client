@@ -19,10 +19,20 @@ if (typeof window !== 'undefined') {
 
     // need to use https really
 
+    // timeout...
+
     jsgui.http = (url, callback) => {
             return prom_or_cb((resolve, reject) => {
+
+                let timeout = 2500;
+                //if (jsgui.timeout) timeout = jsgui.timeout;
+                //console.log('timeout', timeout);
+
                 var oReq = new XMLHttpRequest();
+                oReq.timeout = timeout;
                 oReq.onreadystatechange = function () {
+                    //console.log('this.readyState', this.readyState);
+                    //console.log('this.status', this.status);
                     if (this.readyState == 4) {
                         //console.log('this.status', this.status);
                         if (this.status == 200) {
