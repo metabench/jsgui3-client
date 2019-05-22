@@ -1,3 +1,5 @@
+// Data_Resource could be separated from jsgui3.
+
 var jsgui = require('jsgui3-html');
 var Client_Resource = require('./resource');
 
@@ -15,6 +17,16 @@ var Class = jsgui.Class,
 var fp = jsgui.fp,
     is_defined = jsgui.is_defined;
 var Collection = jsgui.Collection;
+
+// Client_Server_Resource_Connection
+
+// data-resource-pool on npm
+//  resource-pool already taken
+
+// Data_Resource could build differently on the client?
+//  Or have Browser_Data_Resource
+//  WebClient_Data_Resource
+//  Browser sounds most accurate
 
 class Data_Resource extends Client_Resource {
     constructor(spec) {
@@ -37,6 +49,9 @@ class Data_Resource extends Client_Resource {
 
     post(key, value, callback) {
         return prom_or_cb((solve, jettison) => {
+
+            // HTTP compression of posts within the browser would be nice too.
+
             jsgui.http_post('/resources/' + key, value, (err, res_http) => {
                 if (err) {
                     console.log('err', err);

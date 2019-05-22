@@ -24,6 +24,18 @@
 */
 
 var jsgui = require('jsgui3-html');
+
+// Could make a separate Data_Resource
+//  That Data_Resource would have the API that DR in jsgui3 now has.
+//   Will use self-logging and observable / observable-like functionality for monitoring it within the app
+//   Will have a fairly general and specified get / set pattern
+//    Things will work in a generally restful way.
+//    Could look into graphql
+//     Maybe would need to be graphql resource.
+
+
+
+
 var Resource = jsgui.Resource;
 
 const fnl = require('fnl');
