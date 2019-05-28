@@ -13,6 +13,8 @@ const prom_or_cb = fnl.prom_or_cb;
 
 const {each} = jsgui;
 
+// Should move some / all html that is client-side to here.
+
 // Leave the line below
 /* -- REQUIREMENTS -- */
 // Leave the line above
@@ -102,8 +104,8 @@ if (typeof window !== 'undefined') {
 
     
     jsgui.update_standard_Controls = page_context => {
-        console.log('client.js update_standard_Controls');
-        console.trace();
+        //console.log('client.js update_standard_Controls');
+        //console.trace();
 
         // jsgui.controls
         //  put them there before the registration phase.
@@ -112,8 +114,7 @@ if (typeof window !== 'undefined') {
 
         each(jsgui.controls, (Control_Subclass, name) => {
             page_context.update_Controls(name, Control_Subclass);
-        })
-
+        });
         /*
 
         page_context.update_Controls('text_field', jsgui.Text_Field);
@@ -156,8 +157,8 @@ if (typeof window !== 'undefined') {
     }
     
 
-    console.log('Client-side app ready for activation');
-    console.log('next line');
+    //console.log('Client-side app ready for activation');
+    //console.log('next line');
 
     // Standard controls update
     // Standard controls import?
@@ -205,9 +206,7 @@ if (typeof window !== 'undefined') {
     window.addEventListener('load', () => {
         console.log('client.js window onload');
         activate();
-    })
-
-
+    });
     
     /*
     window.onload = () => {

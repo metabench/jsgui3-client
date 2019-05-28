@@ -28,6 +28,54 @@ var Collection = jsgui.Collection;
 //  WebClient_Data_Resource
 //  Browser sounds most accurate
 
+
+// HTTP_Data_Resource
+
+// Some may work with websockets.
+
+
+// WS_Data_Resources
+//  Or the pool
+
+// Want it so that all of the resources are available through a single websockets connection.
+// Then it will be a matter of choosing the service method(s).
+
+// In some cases websockets will be better than SSE.
+//  Could try binary encoding and message envelopes over websockets.
+
+
+// Direct HTTP connection to the server here.
+// Consider HTTPS as well.
+
+// General purpose and extendable UI for observables and events will be very useful.
+//  Should work on that soon.
+
+// Will be like a full screen application. Slightly similar layout to VS code and other editors.
+//  Definitely need to do more work on the editor / documents etor view
+//  Items_Editor
+//  Editor_UI
+
+// Could be its own project.
+//  jsgui3-editor-ui
+//  jsgui3-multiview
+
+//  make an advanced view system that is much like vs code.
+//  make it work full-screen / large window, also as electron app.
+//   react-native too?
+
+
+// Need to make a general purpose business / productivity multiview.
+//  Then hook it up with online data
+//   Such as for loading and saving docs
+//   A file tree
+//  Viewing long-running processes
+//  Viewing medium-running processes ie downloads and their logs
+
+// Having a variety of (functional) data adapters on the server-side to connect the data (channels) in the app to the db / data storage.
+
+// resource.adapter = ...
+//  an adapter proprty on some data resources to connect them with specific DBs / DB instances.
+
 class Data_Resource extends Client_Resource {
     constructor(spec) {
         super(spec);
@@ -46,6 +94,8 @@ class Data_Resource extends Client_Resource {
             });
         }, callback);
     }
+
+    // Saving values to the server.
 
     post(key, value, callback) {
         return prom_or_cb((solve, jettison) => {

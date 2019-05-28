@@ -4,6 +4,16 @@
  function(jsgui, Resource, Resource_Pool) {
  */
 
+ // Got a lot of this code to delete / refresh / make more concise once things are more fully working.
+ //  Especially regarding parse_mount and controls.
+ //   Want to shrink down the package size a lot.
+
+ // Once the API is stable, could create a build that uses many local variables.
+ //  Could make a build process that does that.
+ //   Would be nice to make a core / small jsgui build that fits in 5KB compressed. 15 would be nice too etc.
+ //    Much will be possible with abstractions over the patterns.
+
+
 var jsgui = require('jsgui3-html');
 //var Resource = require('./client-resource');
 var Resource_Pool = jsgui.Resource_Pool;
@@ -44,6 +54,11 @@ var Collection = jsgui.Collection;
 //  It would make sense.
 //  Perhaps it is worth using a resource publisher? Then is that a resource?
 //  I think the resource pool may be the sensible point of access.
+
+
+// Possibly all websocket communications for all client-side resources will go through the pool.
+//  May need to specify which server in particular we connect to over websocket.
+//   However, having front-end back-end servers could work well, that redirect to other servers, thereby providing one endpoint, and balance the load.
 
 
 var fields = {

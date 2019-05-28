@@ -113,6 +113,11 @@ class Client_Resource extends Resource {
 	//	'url': String
 	//},
 
+	// Subscribe?
+
+	// Should likely work more like an observable.
+	//  At least it extends evented_class
+
 	constructor(spec) {
 		//this._super(spec);
 		spec = spec || {};
@@ -142,13 +147,15 @@ class Client_Resource extends Resource {
 		// Why not listen to the resource's data directly?
 		//  Should not be a problem when doing it on the client?
 
-
 		this.data.on('change', function (property_name, property_value) {
 			//console.log('');
 			//console.log('resource data change property_name', property_name);
 			//console.log('property_value', property_value);
 			that.trigger('change', property_name, property_value);
-		})
+		});
+
+
+		// Want to set up client-side data resources for effective usage.
 
 
 		//this.meta.set('custom_paths', new Data_Object({}));
@@ -293,7 +300,6 @@ class Client_Resource extends Resource {
 
 	get status() {
 		return (async () => {
-
 
 			/*
 			jsgui.http('/resources/' + this.name + '/status.json', (err, res) => {
