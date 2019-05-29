@@ -6,6 +6,8 @@ var Client_Resource = require('./resource');
 const fnl = require('fnl');
 const {prom_or_cb} = fnl;
 
+
+/*
 var stringify = jsgui.stringify,
     each = jsgui.each,
     arrayify = jsgui.arrayify,
@@ -17,6 +19,7 @@ var Class = jsgui.Class,
 var fp = jsgui.fp,
     is_defined = jsgui.is_defined;
 var Collection = jsgui.Collection;
+*/
 
 // Client_Server_Resource_Connection
 
@@ -77,6 +80,11 @@ var Collection = jsgui.Collection;
 //  an adapter proprty on some data resources to connect them with specific DBs / DB instances.
 
 class Data_Resource extends Client_Resource {
+
+
+    // Obersvable download...?
+    //  Can we get the amount downloaded / uploaded in the browser api yet?
+
     constructor(spec) {
         super(spec);
         this.data = {};

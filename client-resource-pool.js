@@ -28,7 +28,7 @@ const prom_or_cb = fnl.prom_or_cb;
 
 const Data_Resource = require('./data-resource');
 
-
+/*
 var stringify = jsgui.stringify,
 	each = jsgui.each,
 	arrayify = jsgui.arrayify,
@@ -39,6 +39,7 @@ var Class = jsgui.Class,
 var fp = jsgui.fp,
 	is_defined = jsgui.is_defined;
 var Collection = jsgui.Collection;
+*/
 
 //var exec = require('child_process').exec;
 
@@ -60,10 +61,11 @@ var Collection = jsgui.Collection;
 //  May need to specify which server in particular we connect to over websocket.
 //   However, having front-end back-end servers could work well, that redirect to other servers, thereby providing one endpoint, and balance the load.
 
-
+/*
 var fields = {
 	'url': String
 };
+*/
 class Client_Resource_Pool extends Resource_Pool {
 	//'fields': ,
 	constructor(spec) {
