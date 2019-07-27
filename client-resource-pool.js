@@ -18,7 +18,6 @@ var jsgui = require('jsgui3-html');
 //var Resource = require('./client-resource');
 var Resource_Pool = jsgui.Resource_Pool;
 
-
 const fnl = require('fnl');
 const prom_or_cb = fnl.prom_or_cb;
 

@@ -112,7 +112,6 @@ class Client_Resource extends Resource {
 	//'fields': {
 	//	'url': String
 	//},
-
 	// Subscribe?
 
 	// Should likely work more like an observable.
@@ -122,13 +121,11 @@ class Client_Resource extends Resource {
 		//this._super(spec);
 		spec = spec || {};
 		super(spec);
-
 		if (spec.meta) {
 			var meta = spec.meta;
 			console.log('1) meta.url', meta.url);
 			if (meta.url) this.meta.set('url', meta.url);
 			if (meta.type_levels) this.meta.set('type_levels', meta.type_levels);
-
 			//console.log('meta.name ' + meta.name);
 		}
 
@@ -140,29 +137,21 @@ class Client_Resource extends Resource {
 		//  This is the interface between the client's data and the server.
 
 		this.data = new Data_Object();
-		var that = this;
-
+		//var that = this;
 		// both in one parameter here?
-
 		// Why not listen to the resource's data directly?
 		//  Should not be a problem when doing it on the client?
 
-		this.data.on('change', function (property_name, property_value) {
+		this.data.on('change', (property_name, property_value) => {
 			//console.log('');
 			//console.log('resource data change property_name', property_name);
 			//console.log('property_value', property_value);
-			that.trigger('change', property_name, property_value);
+			this.trigger('change', property_name, property_value);
 		});
-
-
 		// Want to set up client-side data resources for effective usage.
-
-
 		//this.meta.set('custom_paths', new Data_Object({}));
 		// Those are custom file paths.
-
 		// could have a collection of directories, indexed by name, that get served.
-
 		// Index the collection by string value?
 		//this.meta.set('served_directories', new Collection({'index_by': 'name'}));
 
@@ -172,8 +161,6 @@ class Client_Resource extends Resource {
 
 		// could have a variety of server URLs, but let's deal with one for the moment.
 		//  Won't only get JSON data either.
-
-
 	}
 	'get' (path, callback) {
 		return prom_or_cb((resolve, reject) => {
@@ -181,27 +168,16 @@ class Client_Resource extends Resource {
 
 			let ends_dot_json = ends_with(path, '.json');
 			//console.log('ends_dot_json', ends_dot_json);
-
 			let json_url;
-
 			if (!ends_dot_json) {
 				json_url = path + '.json';
 			} else {
 				json_url = path;
 			}
-
-
 			//console.log('this (Resource)', this);
-
 			json_url = 'resources/' + this.name + '/' + json_url;
-
-			
-
 			//json_url = ''
-
 			//console.log('json_url', json_url);
-
-
 			jsgui.http(json_url, function (err, res) {
 				if (err) {
 					//callback(err);
