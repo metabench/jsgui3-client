@@ -124,7 +124,9 @@ class Client_Page_Context extends jsgui.Page_Context {
                             //console.log('ctrl_target', ctrl_target);
 
                             const target_bcr = ctrl_target.bcr();
-                            //console.log('target_bcr', target_bcr);
+                            const overlay_bcr = ctrl_overlay.bcr();
+                            console.log('target_bcr', target_bcr);
+                            console.log('overlay_bcr', overlay_bcr);
 
                             // determine the position where the ctrl goes.
 
@@ -135,10 +137,34 @@ class Client_Page_Context extends jsgui.Page_Context {
                                 placement_abs_pos = [target_bcr[0][0], target_bcr[1][1]];
                                 //console.log('placement_abs_pos', placement_abs_pos);
 
+
+                                // Work out how much space below there is.
+                                //  Cant be bigger than the amount of space available.
+                                //  Could bind this spacing, ie update it when the space increases.
+
+                                // how much space below?
+                                const overlay_size = overlay_bcr[1];
+                                console.log('overlay_size', overlay_size);
+
+                                const body_size = body.bcr()[1];
+                                console.log('body_size', body_size);
+
+                                const height_left_below_placement = body_size[1] - placement_abs_pos[1];
+                                console.log('height_left_below_placement', height_left_below_placement);
+
+                                // set max-height.
+
+
+
+
+
                                 // set the control's position attributes.
 
                                 ctrl.pos = placement_abs_pos;
                                 ctrl.dom.attributes.style.position = 'absolute';
+                                ctrl.dom.attributes.style['max-height'] = height_left_below_placement + 'px';
+
+
 
 
                                 // 
