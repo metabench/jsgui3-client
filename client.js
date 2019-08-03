@@ -129,53 +129,9 @@ if (typeof window !== 'undefined') {
 
     
     jsgui.update_standard_Controls = page_context => {
-        //console.log('client.js update_standard_Controls');
-        //console.trace();
-
-        // jsgui.controls
-        //  put them there before the registration phase.
-        //   and update all of them with one function call.
-        // jsgui.ctrls
-
         each(jsgui.controls, (Control_Subclass, name) => {
             page_context.update_Controls(name, Control_Subclass);
         });
-        /*
-
-        page_context.update_Controls('text_field', jsgui.Text_Field);
-        page_context.update_Controls('text_item', jsgui.Text_Item);
-        page_context.update_Controls('tree', jsgui.Tree);
-        page_context.update_Controls('tree_node', jsgui.Tree_Node);
-        page_context.update_Controls('panel', jsgui.Panel);
-        page_context.update_Controls('title_bar', jsgui.Title_Bar);
-        page_context.update_Controls('vertical_expander', jsgui.Vertical_Expander);
-        page_context.update_Controls('resize_handle', jsgui.Resize_Handle);
-        page_context.update_Controls('toggle_button', jsgui.Toggle_Button);
-        page_context.update_Controls('start_stop_toggle_button', jsgui.Start_Stop_Toggle_Button);
-        page_context.update_Controls('plus_minus_toggle_button', jsgui.Plus_Minus_Toggle_Button);
-        page_context.update_Controls('list', jsgui.List);
-        page_context.update_Controls('item', jsgui.Item);
-        page_context.update_Controls('item_view', jsgui.Item_View);
-        page_context.update_Controls('item_selector', jsgui.Item_Selector);
-        page_context.update_Controls('combo_box', jsgui.Combo_Box);
-        page_context.update_Controls('popup_menu_button', jsgui.Popup_Menu_Button);
-        //page_context.update_Controls('color_palette', jsgui.Color_Palette);
-        page_context.update_Controls('grid', jsgui.Grid);
-        page_context.update_Controls('grid_cell', jsgui.Grid.Cell);
-        //page_context.update_Controls('month_view', jsgui.Month_View);
-        //page_context.update_Controls('date_picker', jsgui.Date_Picker);
-        page_context.update_Controls('button', jsgui.Button);
-        page_context.update_Controls('multi_layout_mode', jsgui.Multi_Layout_Mode);
-        page_context.update_Controls('horizontal_slider', jsgui.Horizontal_Slider);
-        //page_context.update_Controls('tile_slider', jsgui.Tile_Slider);
-        page_context.update_Controls('left_right_arrows_selector', jsgui.Left_Right_Arrows_Selector);
-        page_context.update_Controls('span', jsgui.span);
-
-        page_context.update_Controls('month_view', jsgui.Month_View);
-        //context = page_context;
-        */
-        
-        //console.log('jsgui.controls', jsgui.controls);
     }
 
 
@@ -319,6 +275,9 @@ if (typeof window !== 'undefined') {
         // jsgui.def_server_resources
 
         jsgui.raise('activate', {
+            context: context
+        });
+        page_context.raise('activate', {
             context: context
         });
 
