@@ -79,8 +79,20 @@ var Collection = jsgui.Collection;
 // resource.adapter = ...
 //  an adapter proprty on some data resources to connect them with specific DBs / DB instances.
 
-class Data_Resource extends Client_Resource {
+// Should allow for (Data) Transformation Resource too.
 
+// get-post remote resource. Or remotely available. Or http resource.
+
+
+// resource connection type:
+//  local-fn, http?
+
+// Data_Get_Post_Resource?
+// Data_KV_Resource?
+
+// Data_Get_Post_Delete_HTTP_Resource
+
+class Data_Get_Post_Delete_HTTP_Resource extends Client_Resource {
 
     // Obersvable download...?
     //  Can we get the amount downloaded / uploaded in the browser api yet?
@@ -135,4 +147,4 @@ class Data_Resource extends Client_Resource {
     }
 }
 
-module.exports = (Data_Resource);
+module.exports = (Data_Get_Post_Delete_HTTP_Resource);

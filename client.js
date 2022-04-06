@@ -53,8 +53,6 @@ if (typeof window !== 'undefined') {
         }, callback);
     }
 
-
-
     jsgui.http_post = (url, value, callback) => {
         return prom_or_cb((resolve, reject) => {
 
@@ -133,8 +131,6 @@ if (typeof window !== 'undefined') {
             page_context.update_Controls(name, Control_Subclass);
         });
     }
-
-
     // Can this be given the context as well?
     //  Could set up the data adapter functions that way too.
 
