@@ -23,6 +23,36 @@
 
 */
 
+// 2022 - considering putting compilation features into the client.
+//  Would need to load in / provide the actual compilation functions.
+//   jsgui3-server would load them in for server-side use automatically (a few compilers at least).
+//    want to redo the way that jsgui3-server runs its compilers.
+//    will be more structured, and less code used in the JavaScript resource.
+
+// Compilers will be integrated at a relatively low level.
+//  Having compilers work on the client should be OK.
+//  Even compiling compilers in Rust.
+
+
+
+
+// The resource may be a compiler or data transformer.
+//  Seems like it's worth doing more on a ll to support that functionality.
+
+// Loading these from Rust / C++ to WASM is part of the issue with compilers.
+//  Need server-side compilation for some of it to happen.
+
+// Looks as though variety of compilers only work on the FS.
+//  Maybe would need to be adapted to operate in mem / only as function.
+
+// Could use an /out directory.
+
+
+
+
+
+
+
 var jsgui = require('jsgui3-html');
 
 // Could make a separate Data_Resource
