@@ -171,6 +171,10 @@ var ends_with = function (str, suffix) {
 // It maybe won't be at a URL.
 //  Just needs to be available within client-side JS.
 
+// HTTP_Resource or HTTP_Client_Resource
+
+
+
 class Client_Resource extends Resource {
 	//'fields': {
 	//	'url': String
