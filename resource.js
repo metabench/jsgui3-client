@@ -184,9 +184,9 @@ class Client_Resource extends Resource {
 	// Should likely work more like an observable.
 	//  At least it extends evented_class
 
-	constructor(spec) {
+	constructor(spec = {}) {
 		//this._super(spec);
-		spec = spec || {};
+		//spec = spec || {};
 		super(spec);
 		if (spec.meta) {
 			var meta = spec.meta;
