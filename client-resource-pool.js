@@ -25,7 +25,7 @@ const prom_or_cb = fnl.prom_or_cb;
 //  I think that makes sense, so that we have something specific which has the URL attached.
 //   It is able to make HTTP requests to the server resource.
 
-const Data_Resource = require('./data-resource');
+//const Data_Resource = require('./data-resource');
 
 /*
 var stringify = jsgui.stringify,
@@ -77,11 +77,11 @@ class Client_Resource_Pool extends Resource_Pool {
 
 		//  Sometimes SSE would be better.
 
-		let data_resource = new Data_Resource({
-			'name': 'Data Resource'
-		});
+		//let data_resource = new Data_Resource({
+		//	'name': 'Data Resource'
+		//});
 		//console.log('pre add data_resource', data_resource);
-		this.add(data_resource);
+		//this.add(data_resource);
 
 
 	}
