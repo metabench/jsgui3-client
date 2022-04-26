@@ -46,7 +46,7 @@ const X = 0, Y = 1, H = 2, W = 3, R = 4, B = 5, TX = 6, TY = 7;
 
 // or a map of the properties from the numbers?
 
-
+// console = {log: () => {}};
 
 
 class Client_Page_Context extends jsgui.Page_Context {
@@ -263,8 +263,8 @@ class Client_Page_Context extends jsgui.Page_Context {
                             //console.log('ctrl_target', ctrl_target);
                             const target_bcr = ctrl_target.bcr();
                             const overlay_bcr = ctrl_overlay.bcr();
-                            console.log('target_bcr', target_bcr);
-                            console.log('overlay_bcr', overlay_bcr);
+                            //console.log('target_bcr', target_bcr);
+                            //console.log('overlay_bcr', overlay_bcr);
                             // determine the position where the ctrl goes.
                             // depending on the string
                             if (str_description === 'below') {
@@ -275,11 +275,11 @@ class Client_Page_Context extends jsgui.Page_Context {
                                 //  Could bind this spacing, ie update it when the space increases.
                                 // how much space below?
                                 const overlay_size = overlay_bcr[1];
-                                console.log('overlay_size', overlay_size);
+                                //console.log('overlay_size', overlay_size);
                                 const body_size = body.bcr()[1];
-                                console.log('body_size', body_size);
+                                //console.log('body_size', body_size);
                                 const height_left_below_placement = body_size[1] - placement_abs_pos[1];
-                                console.log('height_left_below_placement', height_left_below_placement);
+                                //console.log('height_left_below_placement', height_left_below_placement);
                                 // set max-height.
                                 // set the control's position attributes.
                                 ctrl.pos = placement_abs_pos;
@@ -387,9 +387,9 @@ class Client_Page_Context extends jsgui.Page_Context {
 
             //const {map_controls} = this;
             each(map_controls, (ctrl, jsgui_id) => {
-                console.log('');
-                console.log('jsgui_id', jsgui_id);
-                console.log('!!ctrl.dom.el', !!ctrl.dom.el);
+                //console.log('');
+                //console.log('jsgui_id', jsgui_id);
+                //console.log('!!ctrl.dom.el', !!ctrl.dom.el);
 
                 if (ctrl.dom.el) {
                     map_ctrls_in_last_frame[jsgui_id] = ctrl;
@@ -397,7 +397,7 @@ class Client_Page_Context extends jsgui.Page_Context {
                 }
             });
 
-            console.log('map_ctrls_in_last_frame', map_ctrls_in_last_frame);
+            //console.log('map_ctrls_in_last_frame', map_ctrls_in_last_frame);
 
 
             let ta_last_frame;
@@ -467,7 +467,7 @@ class Client_Page_Context extends jsgui.Page_Context {
                 // 
 
                 map_current_dom_ctrl_iids = create_map_ctrls_iids(map_ctrls_in_last_frame);
-                console.log('map_current_dom_ctrl_iids', map_current_dom_ctrl_iids);
+                //console.log('map_current_dom_ctrl_iids', map_current_dom_ctrl_iids);
 
                 const record_ctrls_info = (map_dom_ctrls, map_dom_ctrl_iids, ta) => {
 
@@ -521,8 +521,8 @@ class Client_Page_Context extends jsgui.Page_Context {
             const assign_ctrls_ta_subarrays = (ta_current_frame_for_user, map_dom_controls, map_iids) => {
                 // go through the map of controls.
                 //  set the .ta property.
-                console.log('assign_ctrls_ta_subarrays');
-                console.log('map_dom_controls', map_dom_controls);
+                //console.log('assign_ctrls_ta_subarrays');
+                //console.log('map_dom_controls', map_dom_controls);
 
                 each(map_dom_controls, (ctrl, jsgui_id) => {
                     const ctrl_iid = map_iids[jsgui_id];
@@ -1131,7 +1131,7 @@ class Client_Page_Context extends jsgui.Page_Context {
     
                 each(map_controls, (ctrl, id) => {
                     const ctrl_iid = ctrl.iid;
-                    console.log('ctrl_iid', ctrl_iid);
+                    //console.log('ctrl_iid', ctrl_iid);
     
                     wpos = ctrl_iid * ctrl_length;
                     // get the ta bcr?
@@ -1139,7 +1139,7 @@ class Client_Page_Context extends jsgui.Page_Context {
                     //  whole bunch of optimizations can avoid using each and use for loops instead. fewer function calls.
                     //   could look into macro / compilation replacement too.
     
-                    console.log('ctrl.dom.el', ctrl.dom.el);
+                    //console.log('ctrl.dom.el', ctrl.dom.el);
     
                     if (ctrl.dom && ctrl.dom.el) {
                         const bcr = ctrl.dom.el.getBoundingClientRect();
