@@ -254,7 +254,6 @@ class Client_Resource extends Resource {
 			return res;
 		})();
 	}
-
 	// We don't notify it this way.
 	//  Thinking of making a serparate Resource that uses websockets or sockjs. Should continue to have the normal non-sock client-side resource as well.
 	///  Will not make its own HTTP connections.

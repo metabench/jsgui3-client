@@ -288,32 +288,6 @@ if (typeof window !== 'undefined') {
         activate();
     });
 
-    // Maybe body could be used a lot more for event handling, using delegation.
-    //  Worth building a body event delegation system that works seprately.
-    //  Can make it an option for adding events, rather than the default way.
-
-    // Seems a problem right now where the body is not recognising / responding to items being added to it.
-    
-    /*
-    window.onload = () => {
-        console.log('client.js window onload');
-        activate();
-    }
-    */
-
-    // Problem for the moment - context is not showing up in the client-side code.
-
-    // LEAVE THIS
-    /* -- ACTIVATE-APP -- */
-
-    /*
-            }
-            early_load_and_activate();
-        }
-    }
-    //activate();
-    */
-
 }
 
 module.exports = jsgui;
