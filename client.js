@@ -184,9 +184,9 @@ if (typeof window !== 'undefined') {
     // Better id page_context is created here.
 
     let activate = () => {
-        console.log('client.js activate');
+        //console.log('client.js activate');
         const {def_server_resources} = jsgui;
-        console.log('def_server_resources', def_server_resources);
+        //console.log('def_server_resources', def_server_resources);
         page_context = new jsgui.Client_Page_Context({
             'document': document
         });
