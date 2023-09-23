@@ -234,7 +234,7 @@ class Client_Page_Context extends jsgui.Page_Context {
                     map_ctrls_in_this_frame = {};
                 }
                 if (this.map_controls_being_removed_in_frame) {
-                    console.log('this.map_controls_being_removed_in_frame', this.map_controls_being_removed_in_frame);
+                    //console.log('this.map_controls_being_removed_in_frame', this.map_controls_being_removed_in_frame);
                     each(map_ctrls_in_last_frame, (ctrl_in_last_frame, ctrl_id) => {
                         if (!this.map_controls_being_removed_in_frame[ctrl_id]) {
                             map_ctrls_in_this_frame[ctrl_id] = ctrl_in_last_frame;
@@ -246,7 +246,7 @@ class Client_Page_Context extends jsgui.Page_Context {
                     map_ctrls_in_this_frame = map_ctrls_in_last_frame;
                 }
                 if (this.map_controls_being_added_in_frame) {
-                    console.log('this.map_controls_being_added_in_frame', this.map_controls_being_added_in_frame);
+                    //console.log('this.map_controls_being_added_in_frame', this.map_controls_being_added_in_frame);
                     this.map_controls_being_added_in_frame = false;
                     each(this.map_controls_being_added_in_frame, (ctrl_added, ctrl_id) => {
                         map_ctrls_in_this_frame[ctrl_id] = ctrl_added;
@@ -274,9 +274,9 @@ class Client_Page_Context extends jsgui.Page_Context {
                 was_resized = true;
                 this.raise('window-resize', e);
             });
-            console.log('count_dom_ctrls', count_dom_ctrls);
+            //console.log('count_dom_ctrls', count_dom_ctrls);
             ta_current_frame_stored = create_controls_number_props_ta();
-            console.log('ta_current_frame_stored.length', ta_current_frame_stored.length);
+            //console.log('ta_current_frame_stored.length', ta_current_frame_stored.length);
             ta_current_frame_for_user = new Float32Array(ta_current_frame_stored.length);
             ta_user_frame_changes = new Float32Array(ta_current_frame_stored.length);
             ta_current_frame_for_user.set(ta_current_frame_stored);
