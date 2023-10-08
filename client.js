@@ -203,10 +203,13 @@ if (typeof window !== 'undefined') {
         jsgui.update_standard_Controls(page_context);
 
         
-
+        /*
         jsgui.raise('pre-activate', {
             context: context
         });
+        */
+        
+        jsgui.pre_activate(page_context);
 
         jsgui.activate(page_context);
 
