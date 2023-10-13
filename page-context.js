@@ -100,6 +100,19 @@ class Client_Page_Context extends jsgui.Page_Context {
         let map_ctrls_in_this_frame;
         let count_dom_ctrls = 0;
         const num_data_points_per_ctrl = 32;
+
+        // May want to simplify this in terms of API, make a page or two explaining it, and maybe make it disabled by default
+        //.  or used on a lower level only by things that need it.
+
+        // Could see about making use of this for detecing overlaps of siblings in a rectangle that extends from the left of a control.
+
+        // This may be better integrated with some code more specific to geometries.
+        //.  Could have some kinds of observers that watch the values that represent the geometries of various controls.
+
+
+
+
+
         this.on('activate', () => {
             console.log('activated client page_context.... ***** map_controls', map_controls);
             each(map_controls, (ctrl, jsgui_id) => {
@@ -140,6 +153,10 @@ class Client_Page_Context extends jsgui.Page_Context {
                         ta[wpos++] = bcr.height;
                         ta[wpos++] = bcr.right;
                         ta[wpos++] = bcr.bottom;
+
+                        // t3dx: ta[6]
+                        // t3dy: ta[7]
+                        // t3dz: ta[8]
                     });
                 }
                 record_ctrls_info(map_ctrls_in_last_frame, map_current_dom_ctrl_iids, res);
@@ -280,7 +297,10 @@ class Client_Page_Context extends jsgui.Page_Context {
             ta_current_frame_for_user = new Float32Array(ta_current_frame_stored.length);
             ta_user_frame_changes = new Float32Array(ta_current_frame_stored.length);
             ta_current_frame_for_user.set(ta_current_frame_stored);
-        })
+        });
+
+
+
         const trial_fns_now_unused = () => {
             const create_dims_from_current_ctrls = this.create_dims_from_current_ctrls = () => {
                 const {
