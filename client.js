@@ -1,5 +1,7 @@
 // Making it a global variable.
 jsgui = require('jsgui3-html');
+
+jsgui.controls.Active_HTML_Document = require('./controls/Active_HTML_Document');
 jsgui.Resource_Pool = require('./client-resource-pool');
 jsgui.Client_Page_Context = require('./page-context');
 //console.log('jsgui.Client_Page_Context', jsgui.Client_Page_Context);
