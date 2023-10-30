@@ -114,12 +114,12 @@ class Client_Page_Context extends jsgui.Page_Context {
 
 
 
-
+        
 
         this.on('activate', () => {
-            console.log('activated client page_context.... ***** map_controls', map_controls);
+            //console.log('activated client page_context.... ***** map_controls', map_controls);
             each(map_controls, (ctrl, jsgui_id) => {
-                if (ctrl.dom.el) {
+                if (ctrl.dom?.el) {
                     map_ctrls_in_last_frame[jsgui_id] = ctrl;
                     count_dom_ctrls++;
                 }
