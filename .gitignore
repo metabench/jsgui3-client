@@ -1,4 +1,4 @@
-# Logs
+ | 6# Logs
 logs
 *.log
 npm-debug.log*
@@ -62,3 +62,5 @@ package-lock.json
 
 .DS_Store
 .vscode/settings.json
+
+.vscode/
