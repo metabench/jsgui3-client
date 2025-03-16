@@ -32,6 +32,8 @@ class Client_Page_Context extends jsgui.Page_Context {
         this.map_els = {};
         let ctrl_modal;
 
+        this.mixins = jsgui.mixins;
+
         // Modal and overlay may be better implemented with mixins perhaps.
 
         Object.defineProperty(this, 'modal', {
