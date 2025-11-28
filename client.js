@@ -1,5 +1,5 @@
 // Making it a global variable.
-jsgui = require('jsgui3-html');
+const jsgui = require('jsgui3-html');
 
 jsgui.Resource_Pool = require('./client-resource-pool');
 jsgui.Client_Page_Context = require('./page-context');
