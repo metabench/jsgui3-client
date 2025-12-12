@@ -37,8 +37,8 @@ npm install jsgui3-client
 
 ## Dependencies
 
-- **jsgui3-html**: ^0.0.163 - Core JSGUI HTML framework
-- **fnl**: 0.0.36 - Functional library utilities
+- **jsgui3-html**: ^0.0.172 - Core JSGUI HTML framework
+- **fnl**: 0.0.37 - Functional library utilities
 
 ## Requirements
 
@@ -61,8 +61,8 @@ Provides `Client_Page_Context` class that extends the base page context with bro
 ### `data-get-post-delete-http-resource.js`
 Implements HTTP-based data resources supporting standard CRUD operations over HTTP.
 
-### `controls/Active_HTML_Document.js`
-An enhanced HTML document control that automatically activates when instantiated.
+### Controls
+This package builds on the control set provided by `jsgui3-html` (for example `Control` and `Modal`) and focuses on client/browser runtime integration (page context, HTTP helpers, client resources).
 
 ## Usage
 
@@ -97,6 +97,20 @@ This module is designed to work in browser environments and provides the client-
 - HTTP communication with server resources
 - Client-side resource pooling and management
 - UI controls optimized for browser execution
+
+## Documentation
+
+- See `docs/README.md` for a comprehensive guide covering how `jsgui3-client` layers on top of `jsgui3-html` and how it integrates with `jsgui3-server` (bundling, serving, and API interaction).
+
+## Testing
+
+```bash
+npm test
+```
+
+Notes:
+- Tests use Node’s built-in `node:test` runner (Node.js >= 18 recommended for running the test suite).
+- Browser-only behavior is tested by stubbing `window`, `document`, and `XMLHttpRequest` in Node (see `test/fixtures/`).
 
 ## License
 

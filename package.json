@@ -2,9 +2,12 @@
   "name": "jsgui3-client",
   "main": "client.js",
   "license": "MIT",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/*.test.js"
+  },
   "dependencies": {
     "fnl": "0.0.37",
-    "jsgui3-html": "^0.0.170"
+    "jsgui3-html": "^0.0.172"
   },
   "engines": {
     "node": ">=15.0.0"
@@ -15,5 +18,5 @@
     "type": "git",
     "url": "https://github.com/metabench/jsgui3-client.git"
   },  
-  "version": "0.0.121"
+  "version": "0.0.122"
 }
