@@ -64,3 +64,6 @@ package-lock.json
 .vscode/settings.json
 
 .vscode/
+
+# E2E build output
+e2e/.dist/

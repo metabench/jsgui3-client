@@ -114,6 +114,12 @@ Run:
 npm test
 ```
 
+E2E (Puppeteer):
+
+```bash
+npm run test:e2e
+```
+
 Notes:
 - Tests use Node’s built-in `node:test` runner (Node.js >= 18 recommended for running the test suite).
 - Browser-only code paths are covered by stubbing `window`, `document`, and `XMLHttpRequest` (see `test/fixtures/`).

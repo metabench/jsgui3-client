@@ -44,6 +44,7 @@ test('client.js activate path: creates context and calls pre_activate/activate',
       assert.ok(jsgui.context);
       assert.equal(preActivateArg, jsgui.context);
       assert.equal(activateArg, jsgui.context);
+      assert.equal(global.page_context, undefined);
     }
   );
 });

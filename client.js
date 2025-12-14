@@ -27,6 +27,7 @@ if (typeof window !== 'undefined') {
 
     // timeout...
     let context;
+    let page_context;
 
     jsgui.http = (url, callback) => {
         return prom_or_cb((resolve, reject) => {

@@ -252,25 +252,25 @@ class Client_Page_Context extends jsgui.Page_Context {
                 }
                 let count_add = 0;
                 let count_remove = 0;
-                if (frame_num === 1) {} else {
-                    map_ctrls_in_this_frame = {};
-                }
                 if (this.map_controls_being_removed_in_frame) {
                     //console.log('this.map_controls_being_removed_in_frame', this.map_controls_being_removed_in_frame);
+                    const map_ctrls_being_removed = this.map_controls_being_removed_in_frame;
+                    map_ctrls_in_this_frame = {};
                     each(map_ctrls_in_last_frame, (ctrl_in_last_frame, ctrl_id) => {
-                        if (!this.map_controls_being_removed_in_frame[ctrl_id]) {
+                        if (!map_ctrls_being_removed[ctrl_id]) {
                             map_ctrls_in_this_frame[ctrl_id] = ctrl_in_last_frame;
                         }
                     });
-                    count_remove += Object.keys(this.map_controls_being_removed_in_frame).length;
+                    count_remove += Object.keys(map_ctrls_being_removed).length;
                     this.map_controls_being_removed_in_frame = false;
                 } else {
                     map_ctrls_in_this_frame = map_ctrls_in_last_frame;
                 }
                 if (this.map_controls_being_added_in_frame) {
                     //console.log('this.map_controls_being_added_in_frame', this.map_controls_being_added_in_frame);
+                    const map_ctrls_being_added = this.map_controls_being_added_in_frame;
                     this.map_controls_being_added_in_frame = false;
-                    each(this.map_controls_being_added_in_frame, (ctrl_added, ctrl_id) => {
+                    each(map_ctrls_being_added, (ctrl_added, ctrl_id) => {
                         map_ctrls_in_this_frame[ctrl_id] = ctrl_added;
                         count_add++;
                     })
@@ -347,15 +347,23 @@ class Client_Page_Context extends jsgui.Page_Context {
             var existing_jsgui_id = bod.getAttribute('data-jsgui-id');
             if (!existing_jsgui_id) {
                 var ctrl_body = new jsgui.body({
-                    'el': document.body,
+                    'el': bod,
                     'context': this
                 });
-                ctrl_body.dom.el.setAttribute('jsgui-id', ctrl_body._id());
+                ctrl_body.dom.el.setAttribute('data-jsgui-id', ctrl_body._id());
                 this.register_control(ctrl_body);
                 this._body = ctrl_body;
             } else {
                 if (this.map_controls[existing_jsgui_id]) {
                     this._body = this.map_controls[existing_jsgui_id];
+                } else {
+                    var ctrl_body = new jsgui.body({
+                        'el': bod,
+                        'context': this
+                    });
+                    ctrl_body.dom.el.setAttribute('data-jsgui-id', ctrl_body._id());
+                    this.register_control(ctrl_body);
+                    this._body = ctrl_body;
                 }
             }
         } else {

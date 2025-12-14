@@ -108,6 +108,12 @@ This module is designed to work in browser environments and provides the client-
 npm test
 ```
 
+E2E (Puppeteer):
+
+```bash
+npm run test:e2e
+```
+
 Notes:
 - Tests use Node’s built-in `node:test` runner (Node.js >= 18 recommended for running the test suite).
 - Browser-only behavior is tested by stubbing `window`, `document`, and `XMLHttpRequest` in Node (see `test/fixtures/`).
