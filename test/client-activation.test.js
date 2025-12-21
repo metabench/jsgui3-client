@@ -48,3 +48,43 @@ test('client.js activate path: creates context and calls pre_activate/activate',
     }
   );
 });
+
+test('client.js activate path: refuses unsafe server resource names', async () => {
+  const handlers = new Map();
+  const windowStub = {
+    addEventListener: (name, fn) => handlers.set(name, fn),
+    requestAnimationFrame: () => {},
+  };
+
+  await withGlobals(
+    {
+      window: windowStub,
+      document: { body: {} },
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+
+      jsgui.pre_activate = () => {};
+      jsgui.activate = () => {};
+      jsgui.update_standard_Controls = () => {};
+      jsgui.def_server_resources = {
+        safe: { name: 'safe', type: 'function' },
+        bad: { name: '__proto__', type: 'function' },
+      };
+
+      const prevWarn = console.warn;
+      console.warn = () => {};
+      try {
+        const onLoad = handlers.get('load');
+        onLoad();
+      } finally {
+        console.warn = prevWarn;
+      }
+
+      const dataResource = jsgui.context.resource_pool.data_resource;
+      assert.equal(typeof dataResource.safe, 'function');
+      assert.equal(Object.prototype.hasOwnProperty.call(dataResource, '__proto__'), false);
+      assert.equal(({}).polluted, undefined);
+    }
+  );
+});

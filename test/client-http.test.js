@@ -82,6 +82,25 @@ test('http(GET): rejects with status on non-200', async () => {
   );
 });
 
+test('http(GET): rejects with {status,responseText,parse_error} on invalid JSON', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() {} },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http('/api/bad-json');
+      const req = FakeXMLHttpRequest.instances[0];
+      req.respond({ status: 200, responseText: 'not json' });
+      await assert.rejects(promise, (err) => err && err.status === 200 && err.parse_error === true && err.responseText === 'not json');
+    }
+  );
+});
+
 test('http_post: JSON-serializes objects and sets content-type', async () => {
   FakeXMLHttpRequest.reset();
 
@@ -99,6 +118,7 @@ test('http_post: JSON-serializes objects and sets content-type', async () => {
 
       assert.equal(req.method, 'POST');
       assert.equal(req.url, '/api/post');
+      assert.equal(req.timeout, 2500);
       assert.equal(req.requestHeaders['content-type'], 'application/json');
       assert.equal(req.sentBody, JSON.stringify({ a: 1, b: 'two' }));
 
@@ -191,8 +211,89 @@ test('http_delete: uses DELETE and parses JSON', async () => {
       const req = FakeXMLHttpRequest.instances[0];
       assert.equal(req.method, 'DELETE');
       assert.equal(req.url, '/api/item/1');
+      assert.equal(req.timeout, 2500);
       req.respond({ status: 200, responseText: JSON.stringify({ deleted: true }) });
       assert.deepEqual(await promise, { deleted: true });
+    }
+  );
+});
+
+test('http_delete: rejects with {status,responseText,parse_error} on invalid JSON', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() {} },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http_delete('/api/bad-json-del');
+      const req = FakeXMLHttpRequest.instances[0];
+      req.respond({ status: 200, responseText: 'nope' });
+      await assert.rejects(promise, (err) => err && err.status === 200 && err.parse_error === true && err.responseText === 'nope');
+    }
+  );
+});
+
+test('http(GET): supports custom jsgui.timeout', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() {} },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      jsgui.timeout = 1234;
+
+      const promise = jsgui.http('/api/example');
+      const req = FakeXMLHttpRequest.instances[0];
+      assert.equal(req.timeout, 1234);
+
+      req.respond({ status: 200, responseText: JSON.stringify({ ok: true }) });
+      assert.deepEqual(await promise, { ok: true });
+    }
+  );
+});
+
+test('http_post: rejects with {timeout:true} on XHR timeout', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() {} },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http_post('/api/timeout', { a: 1 });
+      const req = FakeXMLHttpRequest.instances[0];
+      req.ontimeout();
+      await assert.rejects(promise, (err) => err && err.timeout === true && err.status === 0);
+    }
+  );
+});
+
+test('http_delete: rejects with {network_error:true} on XHR error', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() {} },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http_delete('/api/error');
+      const req = FakeXMLHttpRequest.instances[0];
+      req.onerror();
+      await assert.rejects(promise, (err) => err && err.network_error === true && err.status === 0);
     }
   );
 });

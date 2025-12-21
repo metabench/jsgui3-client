@@ -17,6 +17,7 @@
 var jsgui = require('jsgui3-html');
 //var Resource = require('./client-resource');
 var Resource_Pool = jsgui.Resource_Pool;
+const Data_Get_Post_Delete_HTTP_Resource = require('./data-get-post-delete-http-resource');
 
 const fnl = require('fnl');
 const prom_or_cb = fnl.prom_or_cb;
@@ -71,25 +72,97 @@ class Client_Resource_Pool extends Resource_Pool {
 		//this._super(spec);
 		super(spec);
 
+		// Default data resource used by client.js to attach server-exposed functions.
+		this.data_resource = new Data_Get_Post_Delete_HTTP_Resource({
+			name: 'data'
+		});
+		this.add(this.data_resource);
 
-		// No need to start it in particular?
-		//  Sometimes the data resource will operate over websockets
-
-		//  Sometimes SSE would be better.
-
-		//let data_resource = new Data_Resource({
-		//	'name': 'Data Resource'
-		//});
-		//console.log('pre add data_resource', data_resource);
-		//this.add(data_resource);
-
+		this._started_resource_names = new Set();
 
 	}
 	'start'(callback) {
 
 		return prom_or_cb((resolve, reject) => {
-			//callback(null, true);
-			resolve(true);
+			const start_resource = (resource) => {
+				return new Promise((resolve_start, reject_start) => {
+					if (!resource || typeof resource.start !== 'function') return resolve_start(true);
+
+					let settled = false;
+					const settle_ok = (value) => {
+						if (settled) return;
+						settled = true;
+						resolve_start(value);
+					}
+					const settle_err = (err) => {
+						if (settled) return;
+						settled = true;
+						reject_start(err);
+					}
+
+					const cb = (err, value) => {
+						if (err) {
+							settle_err(err);
+						} else {
+							settle_ok(value);
+						}
+					};
+
+					try {
+						const maybe_promise = resource.start(cb);
+						if (maybe_promise && typeof maybe_promise.then === 'function') {
+							maybe_promise.then(settle_ok, settle_err);
+						}
+					} catch (e) {
+						settle_err(e);
+					}
+				});
+			}
+
+			(async () => {
+				try {
+					const arr_resources = (this.resources && this.resources._arr) ? Array.from(this.resources._arr) : [];
+					const remaining = new Set(arr_resources.filter(r => r && !this._started_resource_names.has(r.name)));
+					if (remaining.size === 0) {
+						this.__started = true;
+						return resolve(true);
+					}
+
+					const started = [];
+					let progressed = true;
+					while (remaining.size && progressed) {
+						progressed = false;
+						for (const resource of Array.from(remaining)) {
+							let meets_requirements = true;
+							if (resource && typeof resource.meets_requirements === 'function') {
+								meets_requirements = resource.meets_requirements();
+							}
+							if (meets_requirements) {
+								await start_resource(resource);
+								remaining.delete(resource);
+								started.push(resource);
+								this._started_resource_names.add(resource.name);
+								progressed = true;
+							}
+						}
+					}
+
+					if (remaining.size) {
+						const remaining_names = Array.from(remaining)
+							.map(r => r && r.name)
+							.filter(Boolean);
+						const err = new Error('Unable to start all resources (unmet requirements): ' + remaining_names.join(', '));
+						err.code = 'RESOURCE_REQUIREMENTS_UNMET';
+						err.remaining_resource_names = remaining_names;
+						throw err;
+					}
+
+					this.__started = this._started_resource_names.size === arr_resources.length;
+					resolve(true);
+				} catch (e) {
+					reject(e);
+				}
+			})();
 		}, callback);
 
 

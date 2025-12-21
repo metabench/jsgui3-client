@@ -11,7 +11,7 @@ The `jsgui3-client` package extends the base `jsgui3-html` framework with browse
 ### HTTP Communication
 - **GET, POST, DELETE requests**: Built-in HTTP methods with Promise/callback support
 - **Automatic JSON handling**: Serialization and parsing of JSON data
-- **Timeout support**: Configurable request timeouts (default: 2500ms)
+- **Timeout support**: Configurable request timeouts (default: 2500ms, override via `jsgui.timeout` in ms)
 - **Error handling**: Comprehensive status code and error response handling
 
 ### Resource Management
@@ -54,9 +54,12 @@ Defines client-side resources that can communicate with server endpoints via HTT
 
 ### `client-resource-pool.js`
 Manages pools of client resources, extending the base resource pool with client-specific capabilities.
+Includes a default `data_resource` used to attach server-exposed resource functions during activation.
+`Client_Resource_Pool.start()` starts resources that meet requirements and rejects if requirements can’t be satisfied.
 
 ### `page-context.js`
 Provides `Client_Page_Context` class that extends the base page context with browser-specific features like modals and DOM management.
+`Client_Page_Context.overlay.place(...)` supports `below`, `above`, `right`, and `left` placements.
 
 ### `data-get-post-delete-http-resource.js`
 Implements HTTP-based data resources supporting standard CRUD operations over HTTP.
@@ -117,6 +120,13 @@ npm run test:e2e
 Notes:
 - Tests use Node’s built-in `node:test` runner (Node.js >= 18 recommended for running the test suite).
 - Browser-only behavior is tested by stubbing `window`, `document`, and `XMLHttpRequest` in Node (see `test/fixtures/`).
+
+## Security Notes / Further Review Areas
+
+- Server resource names registered via `register_server_resources(...)` should be treated as untrusted; `client.js` blocks `__proto__`, `constructor`, and `prototype` to avoid prototype-pollution style issues.
+- HTTP helpers assume JSON responses on HTTP 200 and reject with `{ status, responseText, parse_error: true }` on invalid JSON.
+- XHR timeouts reject with `{ status: 0, timeout: true }`; network errors reject with `{ status: 0, network_error: true }`.
+- CSRF/auth headers/CORS settings are application concerns and are not handled by this package.
 
 ## License
 

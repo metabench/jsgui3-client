@@ -70,11 +70,12 @@ Comprehensive guide to the `jsgui3-client` package, how it extends `jsgui3-html`
 
 - `client.js`: Builds the exported `jsgui` object, wiring in HTTP helpers, resource pooling, and client-aware control behavior.
 - `client-resource-pool.js`: Manages resource instances that communicate with server endpoints (pairs with server-side publishers/resources).
+  - `Client_Resource_Pool.start()`: starts resources that return `true` from `meets_requirements()`; rejects if requirements can’t be satisfied.
 - `data-get-post-delete-http-resource.js`: Implements HTTP-based data resource with GET/POST/DELETE, matching common `jsgui3-server` REST patterns.
 - `resource.js`: Base client resource abstraction for HTTP-backed data access.
 - `page-context.js`: `Client_Page_Context` with DOM integration, modal helpers, and control registration for activation/cleanup.
   - `Client_Page_Context.modal`: lazily creates and adds a `Modal` control.
-  - `Client_Page_Context.overlay`: lazily creates an overlay `Control` with a simple `place(...)` helper.
+  - `Client_Page_Context.overlay`: lazily creates an overlay `Control` with a simple `place(...)` helper (`below`, `above`, `right`, `left`).
 
 ## Typical Project Layout (client side)
 
@@ -88,6 +89,8 @@ Comprehensive guide to the `jsgui3-client` package, how it extends `jsgui3-html`
 - Use `jsgui.http`, `http_post`, `http_delete` for direct calls to server APIs exposed via `jsgui3-server` publishers.
 - For reusable endpoints, create instances of `Data_Get_Post_Delete_HTTP_Resource` and register them with `Client_Resource_Pool`.
 - JSON is serialized/deserialized automatically; default timeout is 2500ms (tune per request).
+- `Client_Resource_Pool` includes a default `data_resource` used by `client.js` to attach server-exposed functions.
+  - Set `jsgui.timeout` (number, ms) to override the default timeout for `http`, `http_post`, and `http_delete`.
 
 ## Activation and Lifecycle
 
@@ -123,6 +126,15 @@ npm run test:e2e
 Notes:
 - Tests use Node’s built-in `node:test` runner (Node.js >= 18 recommended for running the test suite).
 - Browser-only code paths are covered by stubbing `window`, `document`, and `XMLHttpRequest` (see `test/fixtures/`).
+
+## Security Notes / Further Review Areas
+
+This package is a browser-side runtime layer. A few areas deserve explicit review in any real application:
+
+- **Server resource names**: `client.js` can expose server-defined “resource functions” onto the client-side data resource. Treat those server-provided names as untrusted input; `__proto__`, `constructor`, and `prototype` are explicitly blocked to avoid prototype-pollution style issues.
+- **HTTP helpers**: `jsgui.http`, `http_post`, `http_delete` assume JSON responses on HTTP 200. Invalid JSON now rejects with `{ status, responseText, parse_error: true }`. If you need text/binary responses, implement dedicated helpers rather than weakening JSON parsing.
+- **Timeouts/network failures**: XHR timeouts reject with `{ status: 0, timeout: true }`; network errors reject with `{ status: 0, network_error: true }`. Non-200 handling differs per method (see `client.js`).
+- **CSRF / auth**: These helpers do not implement CSRF tokens, auth headers, CORS policy, or `withCredentials` configuration. Those must be handled by your application and server.
 
 ## Working with CSS
 

@@ -61,6 +61,130 @@ test('Client_Page_Context: overlay getter memoizes, activates, and supports plac
   }
 });
 
+test('Client_Page_Context: overlay.place supports place("above")', () => {
+  const jsgui = require('jsgui3-html');
+  const Client_Page_Context = require('../page-context');
+
+  const ctx = new Client_Page_Context({ document: { body: {} } });
+
+  ctx.body = () => ({
+    add: () => {},
+    bcr: () => [
+      [0, 0],
+      [1000, 800],
+    ],
+  });
+
+  const overlay = ctx.overlay;
+
+  const ctrlTarget = new jsgui.Control({ context: ctx });
+  ctrlTarget.bcr = () => [[10, 20], [110, 70]];
+
+  const ctrlToPlace = new jsgui.Control({ context: ctx });
+  overlay.place(ctrlToPlace, ['above', ctrlTarget]);
+
+  assert.deepEqual(ctrlToPlace.pos, [10, 20]);
+  assert.equal(ctrlToPlace.dom.attributes.style.position, 'absolute');
+  assert.equal(ctrlToPlace.dom.attributes.style['max-height'], '20px');
+  assert.equal(ctrlToPlace.dom.attributes.style.transform, 'translateY(-100%)');
+});
+
+test('Client_Page_Context: overlay.place supports place("right")', () => {
+  const jsgui = require('jsgui3-html');
+  const Client_Page_Context = require('../page-context');
+
+  const ctx = new Client_Page_Context({ document: { body: {} } });
+  ctx.body = () => ({
+    add: () => {},
+    bcr: () => [
+      [0, 0],
+      [1000, 800],
+    ],
+  });
+
+  const overlay = ctx.overlay;
+  const ctrlTarget = new jsgui.Control({ context: ctx });
+  ctrlTarget.bcr = () => [[10, 20], [110, 70]];
+
+  const ctrlToPlace = new jsgui.Control({ context: ctx });
+  overlay.place(ctrlToPlace, ['right', ctrlTarget]);
+
+  assert.deepEqual(ctrlToPlace.pos, [110, 20]);
+  assert.equal(ctrlToPlace.dom.attributes.style.position, 'absolute');
+  assert.equal(ctrlToPlace.dom.attributes.style['max-width'], '890px');
+});
+
+test('Client_Page_Context: overlay.place supports place("left")', () => {
+  const jsgui = require('jsgui3-html');
+  const Client_Page_Context = require('../page-context');
+
+  const ctx = new Client_Page_Context({ document: { body: {} } });
+  ctx.body = () => ({
+    add: () => {},
+    bcr: () => [
+      [0, 0],
+      [1000, 800],
+    ],
+  });
+
+  const overlay = ctx.overlay;
+  const ctrlTarget = new jsgui.Control({ context: ctx });
+  ctrlTarget.bcr = () => [[300, 20], [400, 70]];
+
+  const ctrlToPlace = new jsgui.Control({ context: ctx });
+  overlay.place(ctrlToPlace, ['left', ctrlTarget]);
+
+  assert.deepEqual(ctrlToPlace.pos, [300, 20]);
+  assert.equal(ctrlToPlace.dom.attributes.style.position, 'absolute');
+  assert.equal(ctrlToPlace.dom.attributes.style['max-width'], '300px');
+  assert.equal(ctrlToPlace.dom.attributes.style.transform, 'translateX(-100%)');
+});
+
+test('Client_Page_Context.create_dims_from_current_ctrls: returns dims by iid', () => {
+  const Client_Page_Context = require('../page-context');
+
+  const ctx = new Client_Page_Context({ document: { body: {} } });
+  ctx.next_iid = 3;
+
+  ctx.map_controls.ctrl_0 = {
+    iid: 0,
+    dom: {
+      el: {
+        getBoundingClientRect: () => ({
+          left: 10,
+          top: 20,
+          right: 40,
+          bottom: 60,
+          width: 30,
+          height: 40,
+        }),
+      },
+    },
+  };
+
+  ctx.map_controls.ctrl_2 = {
+    iid: 2,
+    dom: {
+      el: {
+        getBoundingClientRect: () => ({
+          left: 1,
+          top: 2,
+          right: 6,
+          bottom: 10,
+          width: 5,
+          height: 8,
+        }),
+      },
+    },
+  };
+
+  const ta = ctx.create_dims_from_current_ctrls();
+  assert.equal(ta.length, 18);
+
+  assert.deepEqual(Array.from(ta.subarray(0, 6)), [10, 20, 40, 60, 30, 40]);
+  assert.deepEqual(Array.from(ta.subarray(12, 18)), [1, 2, 6, 10, 5, 8]);
+});
+
 test('Client_Page_Context.body: uses ctx.document.body and sets data-jsgui-id', () => {
   const jsgui = require('jsgui3-html');
   const Client_Page_Context = require('../page-context');

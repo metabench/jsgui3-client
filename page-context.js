@@ -55,11 +55,11 @@ class Client_Page_Context extends jsgui.Page_Context {
             enumerable: true
         });
         let ctrl_overlay;
-        Object.defineProperty(this, 'overlay', {
-            get() {
-                if (ctrl_overlay) {
-                    return ctrl_overlay;
-                } else {
+		Object.defineProperty(this, 'overlay', {
+			get() {
+				if (ctrl_overlay) {
+					return ctrl_overlay;
+				} else {
                     ctrl_overlay = new Control({
                         context: this,
                         class: 'overlay'
@@ -68,29 +68,52 @@ class Client_Page_Context extends jsgui.Page_Context {
                     if (body) {
                         body.add(ctrl_overlay);
                         ctrl_overlay.activate();
-                    }
-                    ctrl_overlay.place = (ctrl, location) => {
-                        const sloc = deep_sig(location);
-                        let placement_abs_pos;
-                        if (sloc === '[s,C]') {
-                            const [str_description, ctrl_target] = location;
-                            const target_bcr = ctrl_target.bcr();
-                            const overlay_bcr = ctrl_overlay.bcr();
-                            if (str_description === 'below') {
-                                placement_abs_pos = [target_bcr[0][0], target_bcr[1][1]];
-                                const overlay_size = overlay_bcr[1];
-                                const body_size = body.bcr()[1];
-                                const height_left_below_placement = body_size[1] - placement_abs_pos[1];
-                                ctrl.pos = placement_abs_pos;
-                                ctrl.dom.attributes.style.position = 'absolute';
-                                ctrl.dom.attributes.style['max-height'] = height_left_below_placement + 'px';
-                            } else {
-                                console.trace();
-                                throw 'NYI';
-                            }
-                        }
-                        ctrl_overlay.add(ctrl);
-                    }
+					}
+					ctrl_overlay.place = (ctrl, location) => {
+						const sloc = deep_sig(location);
+						let placement_abs_pos;
+						if (sloc === '[s,C]') {
+							const [str_description, ctrl_target] = location;
+							const target_bcr = ctrl_target.bcr();
+							const body_bcr = body.bcr();
+							const body_top = body_bcr[0][1];
+							const body_left = body_bcr[0][0];
+							const body_right = body_bcr[1][0];
+							const body_bottom = body_bcr[1][1];
+							if (str_description === 'below') {
+								placement_abs_pos = [target_bcr[0][0], target_bcr[1][1]];
+								const height_left_below_placement = body_bottom - placement_abs_pos[1];
+								ctrl.pos = placement_abs_pos;
+								ctrl.dom.attributes.style.position = 'absolute';
+								ctrl.dom.attributes.style['max-height'] = height_left_below_placement + 'px';
+							} else if (str_description === 'above') {
+								placement_abs_pos = [target_bcr[0][0], target_bcr[0][1]];
+								const height_left_above_placement = target_bcr[0][1] - body_top;
+								ctrl.pos = placement_abs_pos;
+								ctrl.dom.attributes.style.position = 'absolute';
+								ctrl.dom.attributes.style['max-height'] = height_left_above_placement + 'px';
+								const existing_transform = ctrl.dom.attributes.style.transform;
+								ctrl.dom.attributes.style.transform = existing_transform ? 'translateY(-100%) ' + existing_transform : 'translateY(-100%)';
+							} else if (str_description === 'right') {
+								placement_abs_pos = [target_bcr[1][0], target_bcr[0][1]];
+								const width_left_right_placement = body_right - placement_abs_pos[0];
+								ctrl.pos = placement_abs_pos;
+								ctrl.dom.attributes.style.position = 'absolute';
+								ctrl.dom.attributes.style['max-width'] = width_left_right_placement + 'px';
+							} else if (str_description === 'left') {
+								placement_abs_pos = [Math.max(body_left, target_bcr[0][0]), target_bcr[0][1]];
+								const width_left_left_placement = target_bcr[0][0] - body_left;
+								ctrl.pos = placement_abs_pos;
+								ctrl.dom.attributes.style.position = 'absolute';
+								ctrl.dom.attributes.style['max-width'] = width_left_left_placement + 'px';
+								const existing_transform = ctrl.dom.attributes.style.transform;
+								ctrl.dom.attributes.style.transform = existing_transform ? 'translateX(-100%) ' + existing_transform : 'translateX(-100%)';
+							} else {
+								throw new Error('overlay.place: unsupported placement "' + str_description + '" (supported: below, above, right, left)');
+							}
+						}
+						ctrl_overlay.add(ctrl);
+					}
                     return ctrl_overlay;
                 }
             },
@@ -305,31 +328,6 @@ class Client_Page_Context extends jsgui.Page_Context {
         });
 
 
-
-        const trial_fns_now_unused = () => {
-            const create_dims_from_current_ctrls = this.create_dims_from_current_ctrls = () => {
-                const {
-                    next_iid
-                } = this;
-                const ctrl_length = 6;
-                const ta_res = new Float32Array(next_iid * ctrl_length);
-                let wpos = 0;
-                each(map_controls, (ctrl, id) => {
-                    const ctrl_iid = ctrl.iid;
-                    wpos = ctrl_iid * ctrl_length;
-                    if (ctrl.dom && ctrl.dom.el) {
-                        const bcr = ctrl.dom.el.getBoundingClientRect();
-                        ta_res[wpos++] = bcr.left;
-                        ta_res[wpos++] = bcr.top;
-                        ta_res[wpos++] = bcr.right;
-                        ta_res[wpos++] = bcr.bottom;
-                        ta_res[wpos++] = bcr.width;
-                        ta_res[wpos++] = bcr.height;
-                    }
-                });
-                return ta_res;
-            }
-        }
     }
     'get_ctrl_el' (ctrl) {
         return this.map_els[ctrl._id()];
@@ -339,6 +337,26 @@ class Client_Page_Context extends jsgui.Page_Context {
         if (jsgui_id) {
             this.map_els[jsgui_id] = el;
         }
+    }
+    'create_dims_from_current_ctrls' () {
+        const {next_iid, map_controls} = this;
+        const ctrl_length = 6;
+        const ta_res = new Float32Array(next_iid * ctrl_length);
+        let wpos = 0;
+        each(map_controls, (ctrl, id) => {
+            const ctrl_iid = ctrl.iid;
+            wpos = ctrl_iid * ctrl_length;
+            if (ctrl.dom && ctrl.dom.el) {
+                const bcr = ctrl.dom.el.getBoundingClientRect();
+                ta_res[wpos++] = bcr.left;
+                ta_res[wpos++] = bcr.top;
+                ta_res[wpos++] = bcr.right;
+                ta_res[wpos++] = bcr.bottom;
+                ta_res[wpos++] = bcr.width;
+                ta_res[wpos++] = bcr.height;
+            }
+        });
+        return ta_res;
     }
     'body' () {
         var doc = this.document;

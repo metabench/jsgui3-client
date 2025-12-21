@@ -32,21 +32,41 @@ if (typeof window !== 'undefined') {
     jsgui.http = (url, callback) => {
         return prom_or_cb((resolve, reject) => {
             let timeout = 2500;
-            //if (jsgui.timeout) timeout = jsgui.timeout;
-            //console.log('timeout', timeout);
+            if (Number.isFinite(jsgui.timeout)) timeout = jsgui.timeout;
             var oReq = new XMLHttpRequest();
+            let settled = false;
+            const settle_ok = (value) => {
+                if (settled) return;
+                settled = true;
+                resolve(value);
+            };
+            const settle_err = (err) => {
+                if (settled) return;
+                settled = true;
+                reject(err);
+            };
             oReq.timeout = timeout;
+            oReq.ontimeout = () => settle_err({ status: 0, timeout: true });
+            oReq.onerror = () => settle_err({ status: 0, network_error: true });
             oReq.onreadystatechange = function () {
                 //console.log('this.readyState', this.readyState);
                 //console.log('this.status', this.status);
                 if (this.readyState === 4) {
                     //console.log('this.status', this.status);
                     if (this.status === 200) {
-                        var o = JSON.parse(this.responseText);
-                        //myFunction(myArr);
-                        resolve(o);
+                        try {
+                            var o = JSON.parse(this.responseText);
+                            //myFunction(myArr);
+                            settle_ok(o);
+                        } catch (e) {
+                            settle_err({
+                                status: this.status,
+                                responseText: this.responseText,
+                                parse_error: true
+                            });
+                        }
                     } else {
-                        reject(this.status);
+                        settle_err(this.status);
                     }
                 }
             };
@@ -59,16 +79,40 @@ if (typeof window !== 'undefined') {
         return prom_or_cb((resolve, reject) => {
 
             var oReq = new XMLHttpRequest();
+            let timeout = 2500;
+            if (Number.isFinite(jsgui.timeout)) timeout = jsgui.timeout;
+            let settled = false;
+            const settle_ok = (value) => {
+                if (settled) return;
+                settled = true;
+                resolve(value);
+            };
+            const settle_err = (err) => {
+                if (settled) return;
+                settled = true;
+                reject(err);
+            };
+            oReq.timeout = timeout;
+            oReq.ontimeout = () => settle_err({ status: 0, timeout: true });
+            oReq.onerror = () => settle_err({ status: 0, network_error: true });
             oReq.onreadystatechange = function () {
                 if (this.readyState === 4) {
                     //console.log('this.status', this.status);
                     if (this.status === 200) {
-                        var o = JSON.parse(this.responseText);
-                        //myFunction(myArr);
-                        resolve(o);
+                        try {
+                            var o = JSON.parse(this.responseText);
+                            //myFunction(myArr);
+                            settle_ok(o);
+                        } catch (e) {
+                            settle_err({
+                                status: this.status,
+                                responseText: this.responseText,
+                                parse_error: true
+                            });
+                        }
                     } else {
                         //console.log('this.status', this.status);
-                        reject({
+                        settle_err({
                             status: this.status,
                             responseText: this.responseText
                         });
@@ -110,15 +154,39 @@ if (typeof window !== 'undefined') {
     jsgui.http_delete = (url, callback) => {
         return prom_or_cb((resolve, reject) => {
             var oReq = new XMLHttpRequest();
+            let timeout = 2500;
+            if (Number.isFinite(jsgui.timeout)) timeout = jsgui.timeout;
+            let settled = false;
+            const settle_ok = (value) => {
+                if (settled) return;
+                settled = true;
+                resolve(value);
+            };
+            const settle_err = (err) => {
+                if (settled) return;
+                settled = true;
+                reject(err);
+            };
+            oReq.timeout = timeout;
+            oReq.ontimeout = () => settle_err({ status: 0, timeout: true });
+            oReq.onerror = () => settle_err({ status: 0, network_error: true });
             oReq.onreadystatechange = function () {
                 if (this.readyState === 4) {
                     //console.log('this.status', this.status);
                     if (this.status === 200) {
-                        var o = JSON.parse(this.responseText);
-                        //myFunction(myArr);
-                        resolve(o);
+                        try {
+                            var o = JSON.parse(this.responseText);
+                            //myFunction(myArr);
+                            settle_ok(o);
+                        } catch (e) {
+                            settle_err({
+                                status: this.status,
+                                responseText: this.responseText,
+                                parse_error: true
+                            });
+                        }
                     } else {
-                        reject(this.status);
+                        settle_err(this.status);
                     }
                 }
             };
@@ -228,8 +296,9 @@ if (typeof window !== 'undefined') {
         //console.log('Object.keys(context.resource_pool)', Object.keys(context.resource_pool));
         //console.log('Object.keys(context.resource_pool.resources)', Object.keys(context.resource_pool.resources));
 
-        const arr_resources = context.resource_pool.resources._arr;
-        const data_resource = arr_resources[0];
+        const resource_pool = context.resource_pool;
+        const arr_resources = resource_pool.resources._arr;
+        const data_resource = resource_pool.data_resource || resource_pool.data || arr_resources[0];
 
         //console.log('data_resource', data_resource);
 
@@ -238,6 +307,11 @@ if (typeof window !== 'undefined') {
 
             const {name, type} = obj_def;
             if (type === 'function') {
+                const blocked_names = new Set(['__proto__', 'prototype', 'constructor']);
+                if (typeof name !== 'string' || blocked_names.has(name)) {
+                    console.warn('Refusing to register unsafe server resource name:', name);
+                    return;
+                }
                 const fn_remote_call = async (single_param) => {
                     // do jsgui put.
                     // Fn call should be done with put.
