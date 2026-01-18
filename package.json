@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "fnl": "0.0.37",
-    "jsgui3-html": "^0.0.177"
+    "jsgui3-html": "^0.0.179"
   },
   "devDependencies": {
     "esbuild": "^0.27.1",
@@ -23,6 +23,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/metabench/jsgui3-client.git"
-  },  
-  "version": "0.0.126"
+  },
+  "version": "0.0.128"
 }

@@ -9,10 +9,81 @@ jsgui.Client_Page_Context = require('./page-context');
 //
 
 jsgui.Client_Resource = require('./resource');
+jsgui.SSE_Resource = require('./sse-resource');
+jsgui.Remote_Observable = require('./remote-observable');
 const fnl = require('fnl');
 const prom_or_cb = fnl.prom_or_cb;
 
-const {each, tf} = jsgui;
+const { each, tf } = jsgui;
+
+// Add bindRemote() to Control for reactive data binding
+const Control = jsgui.Control;
+if (Control && Control.prototype && !Control.prototype.bindRemote) {
+    /**
+     * Bind a Remote_Observable to the control's data model
+     * Updates data.model automatically when observable emits 'next'
+     * 
+     * @param {Remote_Observable|string} observable - Observable instance or URL
+     * @param {object} [options]
+     * @param {string[]} [options.properties] - Only bind these properties
+     * @param {Function} [options.transform] - Transform data before setting
+     * @param {boolean} [options.autoConnect=true] - Auto-connect if URL provided
+     */
+    Control.prototype.bindRemote = function (observable, options = {}) {
+        const { properties, transform, autoConnect = true } = options;
+
+        // Create observable from URL if string provided
+        let obs = observable;
+        if (typeof observable === 'string') {
+            obs = new jsgui.Remote_Observable({ url: observable });
+            if (autoConnect) {
+                obs.connect();
+            }
+        }
+
+        // Ensure we have a data model
+        const dataModel = this.data && this.data.model;
+        if (!dataModel || typeof dataModel.set !== 'function') {
+            console.warn('[bindRemote] Control has no data.model with set()');
+            return obs;
+        }
+
+        // Handle 'next' events
+        obs.on('next', (data) => {
+            const mapped = typeof transform === 'function' ? transform(data) : data;
+            if (!mapped || typeof mapped !== 'object') return;
+
+            if (Array.isArray(properties) && properties.length > 0) {
+                // Only update specified properties
+                properties.forEach(key => {
+                    if (key in mapped) {
+                        dataModel.set(key, mapped[key]);
+                    }
+                });
+            } else {
+                // Update all properties
+                Object.entries(mapped).forEach(([key, value]) => {
+                    dataModel.set(key, value);
+                });
+            }
+        });
+
+        // Auto-cleanup on destroy
+        if (typeof this.on === 'function') {
+            this.on('destroy', () => {
+                if (obs && typeof obs.disconnect === 'function') {
+                    obs.disconnect();
+                }
+            });
+        }
+
+        // Store reference for manual access
+        this._boundObservables = this._boundObservables || [];
+        this._boundObservables.push(obs);
+
+        return obs;
+    };
+}
 
 // Should move some / all html that is client-side to here.
 
@@ -119,13 +190,13 @@ if (typeof window !== 'undefined') {
                     }
                 }
             };
-            
+
             oReq.open("POST", url, true);
             // set any headers here, such as content-type
 
             //let s_value;
             // always send a buffer?
-            
+
             let o_to_send;
             let tval = tf(value)
 
@@ -195,7 +266,119 @@ if (typeof window !== 'undefined') {
         }, callback);
     }
 
-    
+    jsgui.http_put = (url, value, callback) => {
+        return prom_or_cb((resolve, reject) => {
+            var oReq = new XMLHttpRequest();
+            let timeout = 2500;
+            if (Number.isFinite(jsgui.timeout)) timeout = jsgui.timeout;
+            let settled = false;
+            const settle_ok = (val) => {
+                if (settled) return;
+                settled = true;
+                resolve(val);
+            };
+            const settle_err = (err) => {
+                if (settled) return;
+                settled = true;
+                reject(err);
+            };
+            oReq.timeout = timeout;
+            oReq.ontimeout = () => settle_err({ status: 0, timeout: true });
+            oReq.onerror = () => settle_err({ status: 0, network_error: true });
+            oReq.onreadystatechange = function () {
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        try {
+                            var o = JSON.parse(this.responseText);
+                            settle_ok(o);
+                        } catch (e) {
+                            settle_err({
+                                status: this.status,
+                                responseText: this.responseText,
+                                parse_error: true
+                            });
+                        }
+                    } else {
+                        settle_err({
+                            status: this.status,
+                            responseText: this.responseText
+                        });
+                    }
+                }
+            };
+            oReq.open("PUT", url, true);
+            let o_to_send;
+            let tval = tf(value);
+            if (tval === 's') {
+                o_to_send = value;
+            } else if (tval === 'B') {
+                o_to_send = value;
+            } else if (tval === 'a' || tval === 'o') {
+                const json = JSON.stringify(value);
+                o_to_send = json;
+                oReq.setRequestHeader('content-type', 'application/json');
+            }
+            oReq.send(o_to_send);
+        }, callback);
+    }
+
+    jsgui.http_patch = (url, value, callback) => {
+        return prom_or_cb((resolve, reject) => {
+            var oReq = new XMLHttpRequest();
+            let timeout = 2500;
+            if (Number.isFinite(jsgui.timeout)) timeout = jsgui.timeout;
+            let settled = false;
+            const settle_ok = (val) => {
+                if (settled) return;
+                settled = true;
+                resolve(val);
+            };
+            const settle_err = (err) => {
+                if (settled) return;
+                settled = true;
+                reject(err);
+            };
+            oReq.timeout = timeout;
+            oReq.ontimeout = () => settle_err({ status: 0, timeout: true });
+            oReq.onerror = () => settle_err({ status: 0, network_error: true });
+            oReq.onreadystatechange = function () {
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        try {
+                            var o = JSON.parse(this.responseText);
+                            settle_ok(o);
+                        } catch (e) {
+                            settle_err({
+                                status: this.status,
+                                responseText: this.responseText,
+                                parse_error: true
+                            });
+                        }
+                    } else {
+                        settle_err({
+                            status: this.status,
+                            responseText: this.responseText
+                        });
+                    }
+                }
+            };
+            oReq.open("PATCH", url, true);
+            let o_to_send;
+            let tval = tf(value);
+            if (tval === 's') {
+                o_to_send = value;
+            } else if (tval === 'B') {
+                o_to_send = value;
+            } else if (tval === 'a' || tval === 'o') {
+                const json = JSON.stringify(value);
+                o_to_send = json;
+                oReq.setRequestHeader('content-type', 'application/json');
+            }
+            oReq.send(o_to_send);
+        }, callback);
+    }
+
+
     jsgui.update_standard_Controls = page_context => {
         each(jsgui.controls, (Control_Subclass, name) => {
             page_context.update_Controls(name, Control_Subclass);
@@ -234,7 +417,7 @@ if (typeof window !== 'undefined') {
     }
 
 
-    
+
 
     //console.log('Client-side app ready for activation');
     //console.log('next line');
@@ -247,7 +430,7 @@ if (typeof window !== 'undefined') {
     // Maybe activation within the client js would be most reliable and normal.
 
     // Automatic creation of page_context is best
-    
+
     // Or generate the context, then activate.
     //  Or activation itself ensures and returns the page context.
 
@@ -255,7 +438,7 @@ if (typeof window !== 'undefined') {
 
     let activate = () => {
         //console.log('client.js activate');
-        const {def_server_resources} = jsgui;
+        const { def_server_resources } = jsgui;
         //console.log('def_server_resources', def_server_resources);
         page_context = new jsgui.Client_Page_Context({
             'document': document
@@ -272,18 +455,18 @@ if (typeof window !== 'undefined') {
 
         jsgui.update_standard_Controls(page_context);
 
-        
+
         /*
         jsgui.raise('pre-activate', {
             context: context
         });
         */
-        
+
         jsgui.pre_activate(page_context);
 
         jsgui.activate(page_context);
 
-        
+
 
         // Could set up the data_resource function calls here.
         //  Seems like a sensible place to do it, but maybe call a function that is elsewhere.
@@ -305,7 +488,7 @@ if (typeof window !== 'undefined') {
         const activate_server_resource_fn = (obj_def) => {
             //console.log('obj_def', obj_def);
 
-            const {name, type} = obj_def;
+            const { name, type } = obj_def;
             if (type === 'function') {
                 const blocked_names = new Set(['__proto__', 'prototype', 'constructor']);
                 if (typeof name !== 'string' || blocked_names.has(name)) {

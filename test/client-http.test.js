@@ -40,7 +40,7 @@ test('http(GET): sets timeout, parses JSON, resolves', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -68,7 +68,7 @@ test('http(GET): rejects with status on non-200', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -87,7 +87,7 @@ test('http(GET): rejects with {status,responseText,parse_error} on invalid JSON'
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -106,7 +106,7 @@ test('http_post: JSON-serializes objects and sets content-type', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -133,7 +133,7 @@ test('http_post: sends strings without forcing JSON content-type', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -159,7 +159,7 @@ test('http_post: sends buffers as-is', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -182,7 +182,7 @@ test('http_post: rejects with {status,responseText} on non-200', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -201,7 +201,7 @@ test('http_delete: uses DELETE and parses JSON', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -223,7 +223,7 @@ test('http_delete: rejects with {status,responseText,parse_error} on invalid JSO
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -242,7 +242,7 @@ test('http(GET): supports custom jsgui.timeout', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -265,7 +265,7 @@ test('http_post: rejects with {timeout:true} on XHR timeout', async () => {
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
@@ -284,13 +284,149 @@ test('http_delete: rejects with {network_error:true} on XHR error', async () => 
 
   await withGlobals(
     {
-      window: { addEventListener() {} },
+      window: { addEventListener() { } },
       document: { body: {} },
       XMLHttpRequest: FakeXMLHttpRequest,
     },
     async () => {
       const jsgui = freshRequire('client.js');
       const promise = jsgui.http_delete('/api/error');
+      const req = FakeXMLHttpRequest.instances[0];
+      req.onerror();
+      await assert.rejects(promise, (err) => err && err.network_error === true && err.status === 0);
+    }
+  );
+});
+
+// ============================================
+// http_put tests
+// ============================================
+
+test('http_put: JSON-serializes objects and sets content-type', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() { } },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+
+      const promise = jsgui.http_put('/api/resource/1', { name: 'updated' });
+      const req = FakeXMLHttpRequest.instances[0];
+
+      assert.equal(req.method, 'PUT');
+      assert.equal(req.url, '/api/resource/1');
+      assert.equal(req.requestHeaders['content-type'], 'application/json');
+      assert.equal(req.sentBody, JSON.stringify({ name: 'updated' }));
+
+      req.respond({ status: 200, responseText: JSON.stringify({ success: true }) });
+      assert.deepEqual(await promise, { success: true });
+    }
+  );
+});
+
+test('http_put: rejects with {status,responseText} on non-200', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() { } },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http_put('/api/resource/1', { a: 1 });
+      const req = FakeXMLHttpRequest.instances[0];
+      req.respond({ status: 404, responseText: 'not found' });
+      await assert.rejects(promise, (err) => err && err.status === 404 && err.responseText === 'not found');
+    }
+  );
+});
+
+test('http_put: rejects with {timeout:true} on XHR timeout', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() { } },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http_put('/api/timeout', { a: 1 });
+      const req = FakeXMLHttpRequest.instances[0];
+      req.ontimeout();
+      await assert.rejects(promise, (err) => err && err.timeout === true && err.status === 0);
+    }
+  );
+});
+
+// ============================================
+// http_patch tests
+// ============================================
+
+test('http_patch: JSON-serializes objects and sets content-type', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() { } },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+
+      const promise = jsgui.http_patch('/api/resource/1', { field: 'value' });
+      const req = FakeXMLHttpRequest.instances[0];
+
+      assert.equal(req.method, 'PATCH');
+      assert.equal(req.url, '/api/resource/1');
+      assert.equal(req.requestHeaders['content-type'], 'application/json');
+      assert.equal(req.sentBody, JSON.stringify({ field: 'value' }));
+
+      req.respond({ status: 200, responseText: JSON.stringify({ patched: true }) });
+      assert.deepEqual(await promise, { patched: true });
+    }
+  );
+});
+
+test('http_patch: rejects with {status,responseText} on non-200', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() { } },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http_patch('/api/resource/1', { a: 1 });
+      const req = FakeXMLHttpRequest.instances[0];
+      req.respond({ status: 500, responseText: 'server error' });
+      await assert.rejects(promise, (err) => err && err.status === 500 && err.responseText === 'server error');
+    }
+  );
+});
+
+test('http_patch: rejects with {network_error:true} on XHR error', async () => {
+  FakeXMLHttpRequest.reset();
+
+  await withGlobals(
+    {
+      window: { addEventListener() { } },
+      document: { body: {} },
+      XMLHttpRequest: FakeXMLHttpRequest,
+    },
+    async () => {
+      const jsgui = freshRequire('client.js');
+      const promise = jsgui.http_patch('/api/error', { a: 1 });
       const req = FakeXMLHttpRequest.instances[0];
       req.onerror();
       await assert.rejects(promise, (err) => err && err.network_error === true && err.status === 0);
