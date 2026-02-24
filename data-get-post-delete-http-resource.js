@@ -4,7 +4,7 @@ var jsgui = require('jsgui3-html');
 var Client_Resource = require('./resource');
 
 const fnl = require('fnl');
-const {prom_or_cb} = fnl;
+const { prom_or_cb } = fnl;
 
 
 /*
@@ -90,20 +90,52 @@ var Collection = jsgui.Collection;
 // Data_Get_Post_Resource?
 // Data_KV_Resource?
 
-// Data_Get_Post_Delete_HTTP_Resource
-
+/**
+ * HTTP-based data resource supporting GET, POST, DELETE and paginated query operations.
+ * Extends Client_Resource with HTTP methods backed by jsgui.http / http_post / http_delete.
+ * All methods support both callback and promise styles via prom_or_cb.
+ *
+ * @extends Client_Resource
+ *
+ * @param {object} spec - Configuration object passed to Client_Resource
+ * @param {string} [spec.name] - Resource name
+ * @param {string} [spec.query_path='/resources/query'] - URL endpoint for query() requests
+ *
+ * @example
+ * // Basic CRUD usage
+ * const resource = new Data_Get_Post_Delete_HTTP_Resource({ name: 'users' });
+ * const user = await resource.get('users/1');
+ * await resource.post('users/1', { name: 'Alice' });
+ * await resource.delete('users/1');
+ *
+ * @example
+ * // Paginated query
+ * const result = await resource.query({
+ *   table: 'users', page: 1, page_size: 25,
+ *   sort: { key: 'name', dir: 'asc' },
+ *   filters: { active: true }
+ * });
+ * // result: { rows: [...], total_count: 500, page: 1, page_size: 25 }
+ *
+ * @example
+ * // Data_Grid integration via factory
+ * const dataSource = Data_Get_Post_Delete_HTTP_Resource.create_data_source('/api/users/query');
+ * const grid = new Data_Grid({ data_source: dataSource });
+ */
 class Data_Get_Post_Delete_HTTP_Resource extends Client_Resource {
-
-    // Obersvable download...?
-    //  Can we get the amount downloaded / uploaded in the browser api yet?
 
     constructor(spec) {
         super(spec);
         this.data = {};
+        this._query_path = (spec && spec.query_path) || '/resources/query';
     }
+    /**
+     * Fetch a resource by key via HTTP GET.
+     * @param {string} key - Resource key (appended to /resources/)
+     * @param {function} [callback] - Optional callback(err, result)
+     * @returns {Promise<any>}
+     */
     get(key, callback) {
-        // Some get operations could return observables.
-        // generally will just be done with an HTTP request.
         return prom_or_cb((solve, jettison) => {
             jsgui.http('/resources/' + key, (err, res_http) => {
                 if (err) {
@@ -115,13 +147,15 @@ class Data_Get_Post_Delete_HTTP_Resource extends Client_Resource {
         }, callback);
     }
 
-    // Saving values to the server.
-
+    /**
+     * Save a value to the server via HTTP POST.
+     * @param {string} key - Resource key (appended to /resources/)
+     * @param {any} value - Value to post (serialized as JSON)
+     * @param {function} [callback] - Optional callback(err, result)
+     * @returns {Promise<any>}
+     */
     post(key, value, callback) {
         return prom_or_cb((solve, jettison) => {
-
-            // HTTP compression of posts within the browser would be nice too.
-
             jsgui.http_post('/resources/' + key, value, (err, res_http) => {
                 if (err) {
                     console.log('err', err);
@@ -133,6 +167,12 @@ class Data_Get_Post_Delete_HTTP_Resource extends Client_Resource {
         }, callback);
     }
 
+    /**
+     * Delete a resource by key via HTTP DELETE.
+     * @param {string} key - Resource key (appended to /resources/)
+     * @param {function} [callback] - Optional callback(err, result)
+     * @returns {Promise<any>}
+     */
     delete(key, callback) {
         return prom_or_cb((solve, jettison) => {
             jsgui.http_delete('/resources/' + key, (err, res_http) => {
@@ -145,6 +185,50 @@ class Data_Get_Post_Delete_HTTP_Resource extends Client_Resource {
             });
         }, callback);
     }
+
+    /**
+     * Query for paginated, sorted, filtered data.
+     * 
+     * @param {object} params - Query parameters
+     * @param {string} params.table - Table/collection name
+     * @param {number} params.page - Page number (1-based)
+     * @param {number} params.page_size - Rows per page
+     * @param {{key: string, dir: 'asc'|'desc'}|null} [params.sort] - Sort specification
+     * @param {object|null} [params.filters] - Filter criteria
+     * @param {function} [callback] - Optional callback(err, result)
+     * @returns {Promise<{rows: Array, total_count: number, page: number, page_size: number}>}
+     */
+    query(params, callback) {
+        return prom_or_cb((solve, jettison) => {
+            jsgui.http_post(this._query_path, params, (err, res_http) => {
+                if (err) {
+                    jettison(err);
+                } else {
+                    solve(res_http);
+                }
+            });
+        }, callback);
+    }
 }
+
+/**
+ * Create a data source function compatible with Data_Grid's data_source interface.
+ * 
+ * @param {string} resource_url - URL to POST query params to
+ * @returns {function(params): Promise<{rows: Array, total_count: number}>}
+ */
+Data_Get_Post_Delete_HTTP_Resource.create_data_source = function (resource_url) {
+    return function (params) {
+        return prom_or_cb((solve, jettison) => {
+            jsgui.http_post(resource_url, params, (err, res_http) => {
+                if (err) {
+                    jettison(err);
+                } else {
+                    solve(res_http);
+                }
+            });
+        });
+    };
+};
 
 module.exports = (Data_Get_Post_Delete_HTTP_Resource);
